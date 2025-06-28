@@ -1,10 +1,14 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  output: 'export',
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  images: { unoptimized: true },
+/**
+ * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially useful
+ * for Docker builds.
+ */
+import './src/env.js';
+
+/** @type {import("next").NextConfig} */
+const config = {
+    eslint: {
+        ignoreDuringBuilds: true,
+    },
 };
 
-module.exports = nextConfig;
+export default config;
