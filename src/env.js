@@ -15,9 +15,8 @@ export const env = createEnv({
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
-    UPLOADTHING_TOKEN: z.string(),
     SLACK_NOTIFICATION_URL: z.string().optional(),
-    GEMINI_API_KEY: z.string().optional(),
+    GEMINI_API_KEY: z.string(),
     CEREBRAS_API_KEY: z.string(),
     RESEND_API_KEY: z.string(),
   },
@@ -41,7 +40,6 @@ export const env = createEnv({
     TURSO_DATABASE_URL: process.env.TURSO_DATABASE_URL,
     TURSO_AUTH_TOKEN: process.env.TURSO_AUTH_TOKEN,
     NODE_ENV: process.env.NODE_ENV,
-    UPLOADTHING_TOKEN: process.env.UPLOADTHING_TOKEN,
     GEMINI_API_KEY: process.env.GEMINI_API_KEY,
     SLACK_NOTIFICATION_URL: process.env.SLACK_NOTIFICATION_URL,
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,

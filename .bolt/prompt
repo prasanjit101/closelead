@@ -51,4 +51,5 @@ Our updated tech stack -
 - Gmail Integration: Composio Gmail API
 - Trpc: For API calls
 - UI Framework: Shadcn UI
+- PNPM: For package management
 </tech_stack>
