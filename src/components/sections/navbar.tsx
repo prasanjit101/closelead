@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { UserProfileDropdown } from "./UserProfileDropdown";
 import { Button } from "../ui/button";
 import { Settings } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 
 export function Navbar({ session }: { session: Session }) {
 
@@ -29,11 +30,23 @@ export function Navbar({ session }: { session: Session }) {
       {/* Right: User Profile Dropdown and Links */}
       <div className="flex items-center gap-3">
         <ThemeSwitcher />
-        <Link href={"/settings"}>
-          <Button variant="outline" size="icon" className="rounded-full">
-            <Settings />
-          </Button>
-        </Link>
+        <div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="icon" className="rounded-full">
+                <Settings />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem asChild>
+                <Link href="/settings">
+                  Settings
+                </Link>
+              </DropdownMenuItem>
+              {/* You can add more links here in the future */}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
         <UserProfileDropdown session={session} />
       </div>
     </nav>
