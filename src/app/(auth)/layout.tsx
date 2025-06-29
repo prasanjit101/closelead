@@ -9,9 +9,9 @@ export default async function AppLayout({
   children: React.ReactNode;
 }) {
   const session = await validateSession();
-  // if (!session?.user?.onboard) {
-  //   redirect('/webhooks');
-  // }
+  if (!session?.user?.onboard) {
+    redirect('/webhooks');
+  }
 
   return (
     <main>
