@@ -1,46 +1,49 @@
-import { useState } from "react";
+'use client';
+
 import { trpc } from "@/trpc/react";
-import { OnboardingFlow } from "@/components/onboarding/OnboardingFlow";
-import { Loader2 } from "lucide-react";
-import { getSession } from "auth";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
 
-export default async function Dashboard() {
-  const session = await getSession();
+export default function DashboardPage() {
+  const { data: leads, isLoading, error } = trpc.lead.getLeads.useQuery();
 
-  if (session && !session.user.onboard) {
-    return <OnboardingFlow />;
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
   }
 
   return (
-    <div className="mx-auto min-h-screen w-10/12 space-y-10 py-20">
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-muted-foreground">
-            Welcome back! Here's an overview of your lead management.
-          </p>
-        </div>
-
-        {/* Dashboard content will go here */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          <div className="rounded-lg border p-6">
-            <h3 className="font-semibold">Total Leads</h3>
-            <p className="text-2xl font-bold">0</p>
-          </div>
-          <div className="rounded-lg border p-6">
-            <h3 className="font-semibold">Active Webhooks</h3>
-            <p className="text-2xl font-bold">1</p>
-          </div>
-          <div className="rounded-lg border p-6">
-            <h3 className="font-semibold">Qualified Leads</h3>
-            <p className="text-2xl font-bold">0</p>
-          </div>
-          <div className="rounded-lg border p-6">
-            <h3 className="font-semibold">Meetings Scheduled</h3>
-            <p className="text-2xl font-bold">0</p>
-          </div>
-        </div>
-      </div>
+    <div className="container mx-auto py-10">
+      <h1 className="text-3xl font-bold mb-6">Leads</h1>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Name</TableHead>
+            <TableHead>Email</TableHead>
+            <TableHead>Phone</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Score</TableHead>
+            <TableHead>Created At</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {leads?.map((lead) => (
+            <TableRow key={lead.id}>
+              <TableCell>{lead.name}</TableCell>
+              <TableCell>{lead.email}</TableCell>
+              <TableCell>{lead.phone}</TableCell>
+              <TableCell>
+                <Badge>{lead.status}</Badge>
+              </TableCell>
+              <TableCell>{lead.score}</TableCell>
+              <TableCell>{new Date(lead.createdAt).toLocaleDateString()}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </div>
   );
 }

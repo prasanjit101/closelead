@@ -9,16 +9,9 @@ import { toast } from "sonner";
 import { UserProfileDropdown } from "./UserProfileDropdown";
 
 export function Navbar({ session }: { session: Session }) {
-  const { mutate: updateUser } = trpc.user.updateUser.useMutation({
-    onSuccess: () => toast.success("Project switched successfully"),
-    onError: (error) => {
-      console.error("Error updating user:", error);
-      toast.error("Failed to switch project");
-    },
-  });
 
   return (
-    <nav className="sticky top-0 z-50 flex items-center justify-between border-b bg-white px-6 py-3 dark:bg-black">
+    <nav className="sticky top-0 z-50 flex items-center justify-between border-b bg-white px-20 py-3 dark:bg-black">
       {/* Left: Logo */}
       <div className="flex items-center gap-6">
         <Link href={"/"}>

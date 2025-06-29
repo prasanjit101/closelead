@@ -1,5 +1,9 @@
+'use client';
+
 import { ArrowRight, PhoneCall } from "lucide-react";
 import { Button } from "../ui/button";
+import { signInGoogle } from "@/lib/auth-client";
+import { env } from "@/env";
 
 export const Hero = () => {
   return (
@@ -34,7 +38,11 @@ export const Hero = () => {
           <PhoneCall />
           Book a call
         </Button>
-        <Button>
+        <Button onClick={() =>
+          signInGoogle({
+            callbackURL: env.NEXT_PUBLIC_APP_URL,
+          })
+        }>
           <ArrowRight />
           Try yourself
         </Button>
