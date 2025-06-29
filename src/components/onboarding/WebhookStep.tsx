@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { trpc } from "@/trpc/react";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { Loader2, RefreshCw } from "lucide-react";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,10 +14,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 const webhookFormSchema = z.object({
     name: z.string().min(1, "Webhook name is required"),
-    webhookUrl: z.string().url("Please enter a valid URL"),
-    formType: z.enum(["typeform", "google_forms", "custom"], {
+    formType: z.enum(["typeform", "google_forms", "custom", "tally"], {
         required_error: "Please select a form type",
     }),
+    webhookSecret: z.string().optional(),
 });
 
 type WebhookFormData = z.infer<typeof webhookFormSchema>;
@@ -27,12 +27,19 @@ interface WebhookStepProps {
     onSuccess: () => void;
 }
 
+// Helper function to generate webhook secret
+function generateWebhookSecret(): string {
+    return Array.from(crypto.getRandomValues(new Uint8Array(16)))
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('');
+}
+
 export function WebhookStep({ onBack, onSuccess }: WebhookStepProps) {
     const form = useForm<WebhookFormData>({
         resolver: zodResolver(webhookFormSchema),
         defaultValues: {
             name: "",
-            webhookUrl: "",
+            webhookSecret: generateWebhookSecret(),
         },
     });
 
@@ -48,6 +55,12 @@ export function WebhookStep({ onBack, onSuccess }: WebhookStepProps) {
 
     const onSubmit = (data: WebhookFormData) => {
         createWebhookMutation.mutate(data);
+    };
+
+    const handleGenerateSecret = () => {
+        const newSecret = generateWebhookSecret();
+        form.setValue("webhookSecret", newSecret);
+        toast.success("New secret generated");
     };
 
     return (
@@ -94,6 +107,7 @@ export function WebhookStep({ onBack, onSuccess }: WebhookStepProps) {
                                             <SelectContent>
                                                 <SelectItem value="typeform">Typeform</SelectItem>
                                                 <SelectItem value="google_forms">Google Forms</SelectItem>
+                                                <SelectItem value="tally">Tally</SelectItem>
                                                 <SelectItem value="custom">Custom Form</SelectItem>
                                             </SelectContent>
                                         </Select>
@@ -107,18 +121,30 @@ export function WebhookStep({ onBack, onSuccess }: WebhookStepProps) {
 
                             <FormField
                                 control={form.control}
-                                name="webhookUrl"
+                                name="webhookSecret"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Webhook URL</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                placeholder="https://your-form-platform.com/webhook"
-                                                {...field}
-                                            />
-                                        </FormControl>
+                                        <FormLabel>Webhook Secret</FormLabel>
+                                        <div className="flex gap-2">
+                                            <FormControl>
+                                                <Input
+                                                    placeholder="Webhook secret for verification"
+                                                    {...field}
+                                                    className="font-mono text-sm"
+                                                />
+                                            </FormControl>
+                                            <Button
+                                                type="button"
+                                                variant="outline"
+                                                size="icon"
+                                                onClick={handleGenerateSecret}
+                                                className="shrink-0"
+                                            >
+                                                <RefreshCw className="h-4 w-4" />
+                                            </Button>
+                                        </div>
                                         <FormDescription>
-                                            The URL where your form sends data when someone submits it.
+                                            This secret will be used to verify webhook authenticity.
                                         </FormDescription>
                                         <FormMessage />
                                     </FormItem>

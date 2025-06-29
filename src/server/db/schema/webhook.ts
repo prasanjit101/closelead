@@ -15,7 +15,8 @@ export const webhooks = sqliteTable("webhooks", {
     .notNull(),
   name: text("name").notNull(),
   webhookUrl: text("webhook_url").notNull(),
-  formType: text("form_type").notNull(), // 'typeform' | 'google_forms' | 'custom'
+  webhookSecret: text("webhook_secret"), // New field for webhook secret
+  formType: text("form_type").notNull(), // 'typeform' | 'google_forms' | 'custom' | 'tally'
   isActive: integer("is_active", { mode: "boolean" }).default(true),
   createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
 });
