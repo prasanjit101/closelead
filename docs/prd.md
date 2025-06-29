@@ -1,12 +1,12 @@
-# Closelead :  Technical Product Requirements Document (PRD)
+# Closelead MVP: Technical Product Requirements Document (PRD)
 
-## System Overview
+## MVP Vision
 
-**Architecture Pattern**: Full-stack Next.js application with API routes handling webhooks, AI processing, and automated messaging workflows.
+**Goal**: Build a minimal viable lead management platform that automates the journey from form submission to meeting booking.
 
-**Core Flow**: Webhook ingestion → AI scoring → Lead creation → Automated follow-up → Calendar sync → Dashboard updates
+**Core Value Proposition**: Automatically score incoming leads, send personalized follow-ups to high value leads, and book meetings - all with minimal manual intervention.
 
-## Technical Stack
+## MVP System Overview
 
 - **Frontend**: Next.js
 - **Backend**: Next.js API routes
@@ -17,78 +17,131 @@
 - **Trpc**: For API calls
 - **UI Framework**: Shadcn UI
 
-## Database Schema Design
+## MVP Database Schema
 
-**Core Tables**:
-- `users` - User accounts and configuration
-- `webhooks` - User webhook endpoints and metadata (form type - "tally", "typeform", signing secret, webhook url, webhook name)
-- `leads` - Lead profiles with scores and status
-- `messages` - Message history and templates
-- `appointments` - Calendar events and status tracking
-- `email_templates` - User-defined follow-up templates
+**Essential Tables Only**:
 
-**Key Relationships**: User → Webhooks (1:many), User → Leads (1:many), Leads → Messages (1:many), Leads → Appointments (1:many)
+```sql
+-- Users table (existing)
+users (id, email, name, created_at, updated_at)
 
-## API Architecture
+-- Webhooks table - simplified
+webhooks (
+  id, 
+  user_id, 
+  name, 
+  webhook_url, 
+  form_type, -- 'typeform' | 'google_forms' | 'custom'
+  is_active,
+  created_at
+)
 
-**Webhook Endpoints**:
-- `POST /api/webhook/[userId]` - Dynamic webhook receiver per user
-- `POST /api/webhook/cal/[userId]` - Cal.com appointment updates
+-- Leads table - core fields only
+leads (
+  id,
+  user_id,
+  webhook_id,
+  name,
+  email,
+  phone,
+  company,
+  raw_data, -- JSON field for form submission
+  score, -- 1-10 AI generated score
+  status, -- 'new' | 'contacted' | 'meeting_booked' | 'closed'
+  created_at,
+  updated_at
+)
+
+-- Messages table - track sent emails
+messages (
+  id,
+  lead_id,
+  user_id,
+  subject,
+  content,
+  sent_at,
+  status -- 'sent' | 'failed'
+)
+
+-- Email templates - user customizable
+email_templates (
+  id,
+  user_id,
+  name,
+  subject,
+  content, -- supports {{name}}, {{company}} variables
+  is_active,
+  created_at
+)
+```
+
+## MVP API Endpoints
+
+**Public Webhooks**:
+- `POST /api/webhook/[webhookId]` - Receive form submissions
 
 **Internal APIs**:
-- `POST /api/leads/score` - AI scoring service
-- `POST /api/messages/send` - Email dispatch
-- `GET /api/dashboard/[userId]` - Dashboard data aggregation
+- `GET /api/leads` - List leads with pagination
+- `POST /api/leads/[id]/score` - Trigger AI scoring
+- `POST /api/leads/[id]/send-email` - Send follow-up email
+- `PUT /api/leads/[id]` - Update lead status
+- `GET /api/templates` - List email templates
+- `POST /api/templates` - Create email template
 
-## User Onboarding Flow
+## MVP User Journey
 
-1. **Account Creation** → Email verification → Profile setup
-2. **Webhook Configuration** → Generate unique webhook URL → Integration instructions
-3. **Cal.com Integration** → Link verification → Webhook setup for appointments
-4. **Template Setup** → Default templates provided → Customization options
-5. **AI Scoring Configuration** → Field mapping → Scoring criteria setup
+### 1. Onboarding (Simplified)
+1. **Sign up** with Google OAuth
+2. **Can create multiple webhooks** - Get webhook URL for forms
+3. **Setup email template** - One default template to start
+4. **Connect Gmail** - OAuth consent for sending emails
 
-## Core System Components
+### 2. Core Workflow
+1. **Form submission** hits webhook
+2. **Lead created** with basic info extraction
+3. **AI scoring** (simple prompt-based scoring 1-10)
+4. **Auto-email** sent if score > 6
+5. **Dashboard update** shows new lead in a kanban board view with drag and drop feature, Table view (Both of which are present as a tab in the dashboard)
 
-**Webhook Processing Engine**:
-- Async queue for webhook processing
-- JSON payload validation and sanitization
-- Rate limiting and duplicate detection
-- Error handling and retry mechanisms
+### 3. Dashboard Management
+- **Lead list view** with basic filtering
 
-**AI Scoring Module**:
-- Configurable scoring algorithms per user
-- Field extraction and normalization
-- Prompt engineering for consistent scoring
-- Fallback scoring for API failures
+## MVP Features (Phase 1)
 
-**Message Automation System**:
-- Template engine with variable substitution
-- Gmail API integration with OAuth2
-- Send queue with retry logic
-- Delivery status tracking
+### ✅ Essential Features
+- [ ] User authentication (Google OAuth)
+- [ ] Webhook creation and management
+- [ ] Form submission processing
+- [ ] Basic lead scoring (AI-powered)
+- [ ] Email template system
+- [ ] Automated email sending
+- [ ] Lead dashboard (list view)
+- [ ] Lead status management
 
-**Calendar Sync Service**:
-- Cal.com webhook processing
-- Appointment status mapping
-- Lead status auto-updates
-- Conflict resolution for duplicate events
+### 🚫 Excluded from MVP
+- Multiple webhook secrets/editing
+- Cal.com integration
+- Complex scoring algorithms
+- Kanban board view
+- Advanced email sequences
+- Real-time updates
+- Advanced analytics
+- Rate limiting (basic only)
 
-## Dashboard Implementation
 
-**Real-time Updates**:
-- Optimistic UI updates with rollback capability
+## MVP Technical Decisions
 
-**View Components**:
-- Kanban board with drag-and-drop (react-beautiful-dnd)
-- Data table with sorting/filtering (TanStack Table)
-- Lead detail modals with inline editing
+**Simplified Choices for Speed**:
+- Basic AI scoring (single prompt, no complex algorithms)
+- Simple email templates (basic variable substitution)
 
-## Security & Performance
+**Future Enhancements** (Post-MVP):
+- Calendar integration
+- Multiple email sequences
+- Analytics dashboard
+- Team collaboration features
 
-**Security Measures**:
-- Input sanitization and validation
-- rate limiting on webhooks
+## MVP Success Metrics
 
 **Performance Optimizations**:
 - Database indexing on frequently queried fields
