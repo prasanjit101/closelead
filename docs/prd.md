@@ -92,7 +92,7 @@ email_templates (
 
 ### 1. Onboarding (Simplified)
 1. **Sign up** with Google OAuth
-2. **Can create multiple webhooks** - Get webhook URL for forms
+2. **Can create multiple webhooks** - Create webhook URL for forms
 3. **Setup email template** - One default template to start
 4. **Connect Gmail** - OAuth consent for sending emails
 

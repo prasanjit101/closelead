@@ -1,4 +1,5 @@
 import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
+import { relations } from "drizzle-orm";
 import {
   createSelectSchema,
   createUpdateSchema,
@@ -22,6 +23,11 @@ export const user = sqliteTable("user", {
   banExpires: integer("ban_expires", { mode: "timestamp" }),
 });
 
+// Define 1:many relationship - one user can have many webhooks
+export const userRelations = relations(user, ({ many }) => ({
+  webhooks: many(webhooks),
+}));
+
 export type User = typeof user.$inferSelect;
 export const selectUserSchema = createSelectSchema(user);
 export const insertUserSchema = createInsertSchema(user);
@@ -29,3 +35,6 @@ export const updateUserSchema = createUpdateSchema(user);
 export type UserInsert = z.infer<typeof insertUserSchema>;
 export type UserUpdate = z.infer<typeof updateUserSchema>;
 export type UserSelect = z.infer<typeof selectUserSchema>;
+
+// Import webhooks table for the relation
+import { webhooks } from "./webhook";

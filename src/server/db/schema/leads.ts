@@ -18,7 +18,7 @@ export const leads = sqliteTable("leads", {
   company: text("company"),
   rawData: text("raw_data"), // JSON field for form submission
   score: integer("score"), // 1-10 AI generated score
-  status: text("status").default('new'), // 'new' | 'contacted' | 'meeting_booked' | 'closed'
+  status: text("status").default('new'), // 'new' | 'contacted' | 'followed_up' | 'replied' | 'meeting_booked' | 'closed'
   createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
   updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
 });
