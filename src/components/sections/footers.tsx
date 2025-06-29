@@ -1,4 +1,3 @@
-import { ExternalLink } from "lucide-react";
 import Link from "next/link";
 
 export interface Footer1Items {
@@ -14,45 +13,27 @@ export interface Footer1Items {
 }
 
 export const Footer1 = () => {
-  const navigationItems = [
-    {
-      title: "Twitter",
-      href: "https://x.com/jit_infinity",
-      external: true,
-    },
-    {
-      title: "LinkedIn",
-      href: "https://www.linkedin.com/in/prasanjit-dutta-82004b18b/",
-      external: true,
-    },
-  ];
-
   return (
-    <div
-      id="footer"
-      className="mt-20 flex w-full items-center justify-between bg-black p-4 px-20 text-white"
-    >
-      <Link
-        href={"https://directory.byjit.com"}
-        rel="noopener noreferrer"
-        target="_blank"
-        className="text-sm"
-      >
-        Made by Jit with ❤️
-      </Link>
-      <div className="flex space-x-4">
-        {navigationItems?.map((item) => (
-          <Link
-            key={item.title}
-            href={item.href}
-            target={item.external ? "_blank" : "_self"}
-            className="flex gap-1"
-            rel={item.external ? "noopener noreferrer" : undefined}
-          >
-            {item.title}
-            <ExternalLink className="h-4 w-4" />
-          </Link>
-        ))}
+    <div className="container mx-auto px-12 py-8 border-t border-gray-100">
+      <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center">
+        <div className="flex items-center gap-3">
+          <div className="h-12 w-12 rounded-md overflow-hidden">
+            <svg viewBox="0 0 100 100" className="h-full w-full">
+              <rect width="100" height="100" fill="#f3f4f6" />
+              <text x="50" y="50" fontSize="40" textAnchor="middle" dominantBaseline="middle" fill="#6b7280">?</text>
+            </svg>
+          </div>
+          <div>
+            <p className="font-medium">Got a question?</p>
+            <div className="flex items-center gap-1 text-sm">
+              <span>DM me on</span>
+              <a href="https://www.linkedin.com/in/prasanjit-dutta-82004b18b/" className="underline">LinkedIn</a>,
+              <a href="https://x.com/jit_infinity" className="underline">Twitter</a>
+              <span>or by</span>
+              <a href="mailto:rely.prasanjit@gmail.com" className="underline">Email</a>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
