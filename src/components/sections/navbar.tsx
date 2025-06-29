@@ -7,6 +7,8 @@ import { ThemeSwitcher } from "../theme-switcher";
 import { trpc } from "@/trpc/react";
 import { toast } from "sonner";
 import { UserProfileDropdown } from "./UserProfileDropdown";
+import { Button } from "../ui/button";
+import { Settings } from "lucide-react";
 
 export function Navbar({ session }: { session: Session }) {
 
@@ -25,8 +27,13 @@ export function Navbar({ session }: { session: Session }) {
       </div>
 
       {/* Right: User Profile Dropdown and Links */}
-      <div className="flex items-center gap-8">
+      <div className="flex items-center gap-3">
         <ThemeSwitcher />
+        <Link href={"/settings"}>
+          <Button variant="outline" size="icon" className="rounded-full">
+            <Settings />
+          </Button>
+        </Link>
         <UserProfileDropdown session={session} />
       </div>
     </nav>
