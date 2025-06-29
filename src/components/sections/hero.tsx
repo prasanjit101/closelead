@@ -3,10 +3,10 @@ import { Button } from "../ui/button";
 
 export const Hero = () => {
   return (
-    <div className="py-16 px-20">
+    <div className="py-20 px-20">
       <div className="mb-8">
         <p className="text-sm font-medium text-gray-600">
-          # For SaaS, AI Agents, Directories, Websites & Apps.
+          # For businesses who are having a hard time dealing with every leads.
         </p>
         <h1 className="mt-4 text-5xl text-primary font-bold tracking-tight">
           Automate lead qualification and booking

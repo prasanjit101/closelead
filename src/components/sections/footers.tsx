@@ -14,7 +14,7 @@ export interface Footer1Items {
 
 export const Footer1 = () => {
   return (
-    <div className="container mx-auto px-20 py-8 border-t border-gray-100">
+    <div className="container mx-auto px-20 py-12 border-t border-gray-100">
       <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center">
         <div className="flex items-center gap-3">
           <div className="h-12 w-12 rounded-md overflow-hidden">
