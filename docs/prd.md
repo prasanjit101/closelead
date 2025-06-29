@@ -62,16 +62,16 @@ messages (
   sent_at,
   status -- 'sent' | 'failed'
 )
-
--- Email templates - user customizable
-email_templates (
+-- Agent table
+agent (
   id,
   user_id,
-  name,
-  subject,
-  content, -- supports {{name}}, {{company}} variables
+  system_prompt,
+  type,
+  metadata,
   is_active,
-  created_at
+  created_at,
+  updated_at
 )
 ```
 
@@ -101,33 +101,11 @@ email_templates (
 2. **Lead created** with basic info extraction
 3. **AI scoring** (simple prompt-based scoring 1-10)
 4. **Auto-email** sent if score > 6
-5. **Dashboard update** shows new lead in a kanban board view with drag and drop feature, Table view (Both of which are present as a tab in the dashboard)
+5. **AI Agent** is triggered to respond to the lead if the score is > 6. The agent is configured to respond to the lead with a message based on the system prompt.
+6. **Dashboard update** shows new lead in a kanban board view with drag and drop feature, Table view (Both of which are present as a tab in the dashboard)
 
 ### 3. Dashboard Management
 - **Lead list view** with basic filtering
-
-## MVP Features (Phase 1)
-
-### ✅ Essential Features
-- [ ] User authentication (Google OAuth)
-- [ ] Webhook creation and management
-- [ ] Form submission processing
-- [ ] Basic lead scoring (AI-powered)
-- [ ] Email template system
-- [ ] Automated email sending
-- [ ] Lead dashboard (list view)
-- [ ] Lead status management
-
-### 🚫 Excluded from MVP
-- Multiple webhook secrets/editing
-- Cal.com integration
-- Complex scoring algorithms
-- Kanban board view
-- Advanced email sequences
-- Real-time updates
-- Advanced analytics
-- Rate limiting (basic only)
-
 
 ## MVP Technical Decisions
 

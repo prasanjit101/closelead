@@ -8,13 +8,14 @@ It can:
 - Appointment scheduling
 - Simple pipeline tracking
 
-## User Onboarding Flow
+## Flow
 
 1. **Account Creation** → Email verification → Profile setup
 2. **Webhook Configuration** → Generate unique webhook URL → Integration instructions
-3. **Cal.com Integration** → Link verification → Webhook setup for appointments
-4. **Template Setup** → Default templates provided → Customization options
-5. **AI Scoring Configuration** → Field mapping → Scoring criteria setup
+3. **Agent Configuration** → an agent is a set of configurations that define how the ai agents in the system will behave. Can be of type "response_agent, followup_agent" for now.
+4. **Cal.com Integration** → Link verification → Webhook setup for appointments
+5. **Template Setup** → Default templates provided → Customization options
+6. **AI Scoring Configuration** → Field mapping → Scoring criteria setup
 
 </project>
 

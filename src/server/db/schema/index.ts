@@ -5,4 +5,4 @@ export * from "./verification";
 export * from "./webhook";
 export * from "./leads";
 export * from "./messages";
-export * from "./email-templates";
+export * from "./agent";
