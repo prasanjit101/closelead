@@ -1,17 +1,17 @@
-'use client';
-import { ArrowLeft } from 'lucide-react';
-import { Button, buttonVariants } from '@/components/ui/button';
-import Link from 'next/link';
-import { cn } from '@/lib/utils';
+"use client";
+import { ArrowLeft } from "lucide-react";
+import { Button, buttonVariants } from "@/components/ui/button";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 export function GoHome() {
   return (
     <Link
-      href={'/'}
+      href={"/"}
       className={cn(
-        'flex items-center p-0',
+        "flex items-center p-0",
         buttonVariants({
-          variant: 'link',
+          variant: "link",
         }),
       )}
     >
@@ -23,7 +23,7 @@ export function GoHome() {
 
 export function GoBack() {
   return (
-    <Button size={'sm'} variant={'ghost'} onClick={() => window.history.back()}>
+    <Button size={"sm"} variant={"ghost"} onClick={() => window.history.back()}>
       <ArrowLeft className="h-4 w-4" /> back
     </Button>
   );

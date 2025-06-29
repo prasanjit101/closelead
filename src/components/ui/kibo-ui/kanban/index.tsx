@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import { Card } from '@/components/ui/card';
-import { cn } from '@/lib/utils';
+import { Card } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 import {
   DndContext,
   rectIntersection,
   useDraggable,
   useDroppable,
-} from '@dnd-kit/core';
-import type { DragEndEvent } from '@dnd-kit/core';
-import type { ReactNode } from 'react';
+} from "@dnd-kit/core";
+import type { DragEndEvent } from "@dnd-kit/core";
+import type { ReactNode } from "react";
 
-export type { DragEndEvent } from '@dnd-kit/core';
+export type { DragEndEvent } from "@dnd-kit/core";
 
 export type Status = {
   id: string;
@@ -28,7 +28,7 @@ export type Feature = {
 };
 
 export type KanbanBoardProps = {
-  id: Status['id'];
+  id: Status["id"];
   children: ReactNode;
   className?: string;
 };
@@ -39,9 +39,9 @@ export const KanbanBoard = ({ id, children, className }: KanbanBoardProps) => {
   return (
     <div
       className={cn(
-        'flex h-full h-[70vh] overflow-y-auto flex-col gap-2 rounded-md p-2 text-xs shadow-sm transition-all bg-secondary',
-        isOver ? 'outline-primary' : 'outline-transparent',
-        className
+        "flex h-[70vh] h-full flex-col gap-2 overflow-y-auto rounded-md bg-secondary p-2 text-xs shadow-sm transition-all",
+        isOver ? "outline-primary" : "outline-transparent",
+        className,
       )}
       ref={setNodeRef}
     >
@@ -50,7 +50,7 @@ export const KanbanBoard = ({ id, children, className }: KanbanBoardProps) => {
   );
 };
 
-export type KanbanCardProps = Pick<Feature, 'id' | 'name'> & {
+export type KanbanCardProps = Pick<Feature, "id" | "name"> & {
   index: number;
   parent: string;
   children?: ReactNode;
@@ -66,37 +66,46 @@ export const KanbanCard = ({
   className,
   dragHandle,
 }: KanbanCardProps & { dragHandle?: React.ReactNode }) => {
-  const { attributes, listeners, setNodeRef, setActivatorNodeRef, transform, isDragging } =
-    useDraggable({
-      id,
-      data: { index, parent },
-    });
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    setActivatorNodeRef,
+    transform,
+    isDragging,
+  } = useDraggable({
+    id,
+    data: { index, parent },
+  });
 
   return (
     <Card
       className={cn(
-        'rounded-md p-3 shadow-sm',
-        isDragging && 'cursor-grabbing',
-        className
+        "rounded-md p-3 shadow-sm",
+        isDragging && "cursor-grabbing",
+        className,
       )}
       style={{
         transform: transform
           ? `translateX(${transform.x}px) translateY(${transform.y}px)`
-          : 'none',
+          : "none",
       }}
       ref={setNodeRef}
     >
       <div>
         {dragHandle && (
-        <div className='flex justify-between' {...listeners} {...attributes} ref={setActivatorNodeRef}>
-            <p className="font-medium text-sm text-wrap">{name}</p>
-          <div>{dragHandle}</div>
-        </div>
-      )}
+          <div
+            className="flex justify-between"
+            {...listeners}
+            {...attributes}
+            ref={setActivatorNodeRef}
+          >
+            <p className="text-wrap text-sm font-medium">{name}</p>
+            <div>{dragHandle}</div>
+          </div>
+        )}
       </div>
-      <div>
-        {children ?? ""}
-      </div>
+      <div>{children ?? ""}</div>
     </Card>
   );
 };
@@ -107,7 +116,7 @@ export type KanbanCardsProps = {
 };
 
 export const KanbanCards = ({ children, className }: KanbanCardsProps) => (
-  <div className={cn('flex flex-1 flex-col gap-2', className)}>{children}</div>
+  <div className={cn("flex flex-1 flex-col gap-2", className)}>{children}</div>
 );
 
 export type KanbanHeaderProps =
@@ -115,21 +124,21 @@ export type KanbanHeaderProps =
       children: ReactNode;
     }
   | {
-      name: Status['name'];
-      color: Status['color'];
+      name: Status["name"];
+      color: Status["color"];
       className?: string;
     };
 
 export const KanbanHeader = (props: KanbanHeaderProps) =>
-  'children' in props ? (
+  "children" in props ? (
     props.children
   ) : (
-    <div className={cn('flex shrink-0 items-center gap-2', props.className)}>
+    <div className={cn("flex shrink-0 items-center gap-2", props.className)}>
       <div
         className="h-2 w-2 rounded-full"
         style={{ backgroundColor: props.color }}
       />
-      <p className="m-0 font-semibold text-sm">{props.name}</p>
+      <p className="m-0 text-sm font-semibold">{props.name}</p>
     </div>
   );
 
@@ -146,9 +155,13 @@ export const KanbanProvider = ({
   className,
   sensors,
 }: KanbanProviderProps) => (
-  <DndContext collisionDetection={rectIntersection} onDragEnd={onDragEnd} sensors={sensors}>
+  <DndContext
+    collisionDetection={rectIntersection}
+    onDragEnd={onDragEnd}
+    sensors={sensors}
+  >
     <div
-      className={cn('grid w-full auto-cols-fr grid-flow-col gap-4', className)}
+      className={cn("grid w-full auto-cols-fr grid-flow-col gap-4", className)}
     >
       {children}
     </div>

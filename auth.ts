@@ -7,7 +7,7 @@ import { cache } from "react";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { nextCookies } from "better-auth/next-js";
-import { createAuthMiddleware, multiSession } from "better-auth/plugins"
+import { admin, createAuthMiddleware, multiSession } from "better-auth/plugins"
 import { sendAdminSlackNotification } from "@/lib/services/notification";
 import { resend } from "@/lib/services/resend";
 import WelcomeEmail from "@/lib/services/email-templates/WelcomeEmail";
@@ -21,25 +21,11 @@ export const auth = betterAuth({
     }),
     user: {
         additionalFields: {
-            companyName: {
+            metadata: {
                 type: "string",
                 required: false,
                 input: false,
-                fieldName: "company_name",
-                unique: false,
-            },
-            companyWebsite: {
-                type: "string",
-                required: false,
-                input: false,
-                fieldName: "company_website",
-                unique: false,
-            },
-            discoverySource: {
-                type: "string",
-                required: false,
-                input: false,
-                fieldName: "discovery_source",
+                fieldName: "metadata",
                 unique: false,
             },
             onboard: {
@@ -69,18 +55,19 @@ export const auth = betterAuth({
         multiSession({
             maximumSessions: 2,
         }),
+        admin(),
     ],
     databaseHooks: {
         user: {
             create: {
                 after: async (user, context) => {
                     if (env.NODE_ENV === 'production') {
-                        await sendAdminSlackNotification(`Supamanager | New user signed up: ${user.email} at ${user.createdAt}`);
+                        await sendAdminSlackNotification(`Closelead | New user signed up: ${user.email} at ${user.createdAt}`);
 
                         await resend.emails.send({
                             from: SYSTEM_ADMIN_EMAIL,
                             to: user.email,
-                            subject: 'Welcome to Supamanager!',
+                            subject: 'Welcome to Closelead!',
                             react: WelcomeEmail({ name: user.name! || 'there' }),
                         });
                     }

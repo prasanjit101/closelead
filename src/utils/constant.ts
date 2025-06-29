@@ -1,1 +1,1 @@
-export const LOCAL_STORAGE_PROJECT_KEY = 'supamanagerSelectedProject';
+export const LOCAL_STORAGE_PROJECT_KEY = "closeleadSelectedProject";

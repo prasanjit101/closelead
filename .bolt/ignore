@@ -1,2 +1,6 @@
 components/ui/*
 hooks/use-toast.ts
+.clinerules
+.vscode/*
+.github/instructions/*
+components/theme/*
