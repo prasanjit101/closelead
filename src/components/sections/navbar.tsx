@@ -4,15 +4,20 @@ import Link from "next/link";
 import { Session } from "auth";
 import { Logo } from "../block/Logo";
 import { ThemeSwitcher } from "../theme-switcher";
-import { trpc } from "@/trpc/react";
-import { toast } from "sonner";
 import { UserProfileDropdown } from "./UserProfileDropdown";
 import { Button } from "../ui/button";
-import { Settings } from "lucide-react";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 export function Navbar({ session }: { session: Session }) {
-  console.log({ session });
+  const pathname = usePathname();
+
+  const navItems = [
+    { href: "/dashboard", label: "Dashboard" },
+    { href: "/webhooks", label: "Webhooks" },
+    { href: "/agents", label: "Agents" },
+  ];
+
   return (
     <nav className="sticky top-0 z-50 flex items-center justify-between border-b bg-white px-20 py-3 dark:bg-black">
       {/* Left: Logo */}
@@ -24,7 +29,20 @@ export function Navbar({ session }: { session: Session }) {
       </div>
 
       <div className="flex flex-grow items-center justify-center gap-4">
-        {/* TODO: Add main controls here */}
+        {navItems.map((item) => (
+          <Link key={item.href} href={item.href}>
+            <Button
+              variant={pathname === item.href ? "default" : "ghost"}
+              size="sm"
+              className={cn(
+                "h-8",
+                pathname === item.href && "bg-primary text-primary-foreground"
+              )}
+            >
+              {item.label}
+            </Button>
+          </Link>
+        ))}
       </div>
 
       {/* Right: User Profile Dropdown and Links */}
