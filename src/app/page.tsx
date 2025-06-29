@@ -21,7 +21,7 @@ export default async function Home() {
           />
           <meta
             itemProp="description"
-            content="AI-Powered Project Management Tool"
+            content="AI-Powered Lead Management and Automation Platform"
           />
           <meta itemProp="sameAs" content="https://x.com/jit_infinity" />
         </div>
@@ -29,16 +29,15 @@ export default async function Home() {
         <Hero />
         <div className="container mx-auto flex flex-col items-center justify-center gap-8 pb-20">
           <h3 className="max-w-2xl text-center text-lg text-gray-700 md:text-xl">
-            &quot;Powered by AI, it can auto-assign tasks to teams based on
-            their skills, create multiple tasks from a single goal, and even
-            predict and autofill the details you need — saving you hours of
-            effort and keeping your projects moving without the usual
-            micromanagement.&quot;
+            "Closelead transforms reactive lead handling into a proactive,
+            automated system. It instantly qualifies leads, automates follow-ups,
+            and streamlines appointment scheduling, ensuring no high-value lead
+            goes cold and accelerating your sales cycles."
           </h3>
           <div className="flex items-center gap-4">
             <span className="block h-1 w-12 rounded bg-primary"></span>
             <h6 className="text-sm text-gray-500">
-              The Project Management tool of the future
+              The Lead-to-Meeting Automation Platform
             </h6>
             <span className="block h-1 w-12 rounded bg-primary"></span>
           </div>

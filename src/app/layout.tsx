@@ -11,19 +11,21 @@ import { SuperButton } from "@/components/block/super-btn";
 import { env } from "@/env";
 
 export const metadata: Metadata = {
-  title: "Closelead - your AI-Powered Project Management Tool",
+  title: "Closelead - AI-Powered Lead Management & Automation Platform",
   description:
-    "Your automated project management tool that auto-assigns tasks, prioritizes work, and generates standup reports using AI.",
+    "Closelead is an AI-powered lead management and automation platform that eliminates manual lead qualification, automates follow-ups, and accelerates sales cycles.",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
   assets: ["/favicon.ico"],
   authors: [{ name: "Jit", url: "https://directory.byjit.com" }],
   keywords: [
-    "AI project management",
-    "AI product management",
-    "automated task assignment",
-    "standup report generator",
-    "engineering team management",
-    "Trello alternative",
+    "AI lead management",
+    "lead automation",
+    "lead qualification",
+    "automated follow-up",
+    "sales acceleration",
+    "appointment scheduling",
+    "lead scoring",
+    "CRM integration",
   ],
   robots: {
     index: true,
@@ -37,8 +39,9 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "Closelead - AI-Powered Project Management",
-    description: "Automated task management for engineering teams",
+    title: "Closelead - AI-Powered Lead Management & Automation",
+    description:
+      "Automate lead qualification, follow-up, and appointment scheduling to accelerate your sales cycle.",
     url: `${env.NEXT_PUBLIC_APP_URL}`,
     siteName: "Closelead",
     images: [
@@ -53,12 +56,13 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Closelead - AI-Powered Project Management",
-    description: "Automated task management for engineering teams",
+    title: "Closelead - AI-Powered Lead Management & Automation",
+    description:
+      "Automate lead qualification, follow-up, and appointment scheduling to accelerate your sales cycle.",
     creator: "@jit_infinity",
     images: [`${env.NEXT_PUBLIC_APP_URL}/og-image.png`],
   },
-  category: "project-management",
+  category: "sales-automation",
   creator: "Jit",
   metadataBase: new URL(`${env.NEXT_PUBLIC_APP_URL}`),
 };
@@ -93,9 +97,9 @@ export default function RootLayout({
             "@context": "https://schema.org",
             "@type": "SoftwareApplication",
             name: "Closelead",
-            description: "AI-Powered Project Management Tool",
+            description: "AI-Powered Lead Management and Automation Platform",
             url: env.NEXT_PUBLIC_APP_URL,
-            applicationCategory: "ProjectManagementApplication",
+            applicationCategory: "SalesApplication",
             operatingSystem: "Web",
             offers: {
               "@type": "Offer",
@@ -105,7 +109,7 @@ export default function RootLayout({
           })}
         </script>
       </head>
-      <body className="px-4 md:px-0">
+      <body className="px-4 md:px-0" suppressHydrationWarning>
         <ThemeProvider
           attribute="class"
           defaultTheme="light"

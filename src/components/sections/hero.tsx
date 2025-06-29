@@ -19,10 +19,10 @@ export const Hero = () => {
           <div className="flex flex-col gap-6">
             <h1 className="font-regular max-w-2xl text-center text-4xl tracking-tighter md:text-6xl">
               <span className="text-primary">
-                Your project management tool that manages itself
+                Your solution to automate lead qualification and booking - a high-value client acquisition tool.
               </span>
               <span className="relative flex w-full justify-center overflow-hidden text-center md:pb-4 md:pt-1">
-                ai first, automated
+                It filters out high-value leads that are more likely to close and helps you convert them effectively.
               </span>
             </h1>
 
