@@ -6,3 +6,4 @@ export * from "./webhook";
 export * from "./leads";
 export * from "./messages";
 export * from "./agent";
+export * from "./integrations";

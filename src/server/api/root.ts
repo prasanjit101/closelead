@@ -1,6 +1,7 @@
 import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
 import { leadRouter, systemRouter, userRouter, agentRouter } from "./routers";
 import { webhookRouter } from "./routers/webhook";
+import { integrationsRouter } from "./routers/integrations";
 /**
  * This is the primary router for your server.
  *
@@ -12,6 +13,7 @@ export const appRouter = createTRPCRouter({
   webhook: webhookRouter,
   lead: leadRouter,
   agent: agentRouter,
+  integrations: integrationsRouter,
 });
 
 // export type definition of API

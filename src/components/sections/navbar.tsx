@@ -16,6 +16,7 @@ export function Navbar({ session }: { session: Session }) {
     { href: "/dashboard", label: "Dashboard" },
     { href: "/webhooks", label: "Webhooks" },
     { href: "/agents", label: "Agents" },
+    { href: "/integrations", label: "Integrations" },
   ];
 
   return (
