@@ -6,7 +6,7 @@ import { Hero } from "@/components/sections/hero";
 export default async function Home() {
   return (
     <HydrateClient>
-      <main className="flex-1 max-w-3xl mx-auto border h-screen" itemScope itemType="https://schema.org/WebPage">
+      <main className="flex-1 max-w-4xl mx-auto border min-h-screen" itemScope itemType="https://schema.org/WebPage">
         <div
           itemScope
           itemType="https://schema.org/Organization"

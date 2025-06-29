@@ -8,7 +8,7 @@ import { Logo } from "../block/Logo";
 export const LandingNav = () => {
   return (
     <header className="w-full border-b border-gray-100">
-      <div className="container mx-auto px-12 py-8">
+      <div className="container mx-auto px-20 py-8">
         <div className="flex items-center justify-between">
           <Link href="/" className="flex items-center">
             <Logo className="text-lg" />

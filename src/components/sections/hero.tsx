@@ -3,31 +3,29 @@ import { Button } from "../ui/button";
 
 export const Hero = () => {
   return (
-    <div className="container mx-auto px-12 py-16">
+    <div className="py-16 px-20">
       <div className="mb-8">
         <p className="text-sm font-medium text-gray-600">
           # For SaaS, AI Agents, Directories, Websites & Apps.
         </p>
         <h1 className="mt-4 text-5xl text-primary font-bold tracking-tight">
-          Automate lead qualification <br /> and booking
+          Automate lead qualification and booking
         </h1>
       </div>
 
       <div className="mb-8">
-        <p className="text-base text-gray-700">
-          Closelead transforms reactive lead handling into a proactive,
-          automated system. It instantly qualifies leads, automates follow-ups,
-          and streamlines appointment scheduling, ensuring no high-value lead
-          goes cold and accelerating your sales cycles.
+        <p className=" text-gray-700">
+          Closelead filters out high-value leads that are more likely to close and helps you convert them effectively.
         </p>
       </div>
 
       <div className="mb-10">
-        <p className="text-base text-gray-700">
-          I got sick of the scams, bots, fake clicks, zero returns. So I built a
-          better ad network. No fluff, no fraud. Advertisers get real ROI.
-          Publishers earn legit revenue. It's advertising that works for
-          everyone.
+        <p className="text-gray-700">
+          It eliminates the tedious process of manual lead qualification and follow-up delays,
+          preventing high-value leads from going cold. It provides instant
+          response to form submissions, ensures consistent AI scoring, and
+          automates booking links, allowing sales teams to focus on qualified
+          leads and accelerate conversions.
         </p>
       </div>
 
