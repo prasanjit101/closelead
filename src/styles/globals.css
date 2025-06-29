@@ -31,14 +31,14 @@
   }
 
   .dark {
-    --background: #020817;
+    --background: ##141415;
       --foreground: #f8fafc;
-      --card: #020817;
+      --card: #0f172a;
       --card-foreground: #f8fafc;
-      --popover: #020817;
+      --popover: #0f172a;
       --popover-foreground: #f8fafc;
-      --primary: #3b82f6;
-      --primary-foreground: #0f172a;
+      --primary: #3b75f0;
+        --primary-foreground: #f8fafc;
     --secondary: #1e293b;
       --secondary-foreground: #f8fafc;
       --muted: #1e293b;

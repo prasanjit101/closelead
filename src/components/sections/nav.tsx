@@ -9,7 +9,7 @@ import { env } from "@/env";
 
 export const LandingNav = () => {
   return (
-    <header className="w-full border-b border-gray-100">
+    <header className="w-full border-b border-gray-100 dark:border-gray-800">
       <div className="container mx-auto px-20 py-8">
         <div className="flex items-center justify-between">
           <Link href="/" className="flex items-center">

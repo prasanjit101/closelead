@@ -9,7 +9,7 @@ export const Hero = () => {
   return (
     <div className="py-20 px-20">
       <div className="mb-8">
-        <p className="text-sm font-medium text-gray-600">
+        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
           # For businesses who are having a hard time dealing with every leads.
         </p>
         <h1 className="mt-4 text-5xl text-primary font-bold tracking-tight">
@@ -18,13 +18,13 @@ export const Hero = () => {
       </div>
 
       <div className="mb-8">
-        <p className=" text-gray-700">
+        <p className=" text-gray-700 dark:text-white">
           Closelead filters out high-value leads that are more likely to close and helps you convert them effectively.
         </p>
       </div>
 
       <div className="mb-10">
-        <p className="text-gray-700">
+        <p className="text-gray-700 dark:text-white">
           It eliminates the tedious process of manual lead qualification and follow-up delays,
           preventing high-value leads from going cold. It provides instant
           response to form submissions, ensures consistent AI scoring, and
