@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
+import { Textarea } from "@/components/ui/textarea"; // Import Textarea
 import { 
   Edit, 
   Trash2, 
@@ -34,7 +35,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/dialog";
+} from "@/components/ui/alert-dialog"; // Correct import path
 
 interface WebhookCardProps {
   webhook: Webhook;
@@ -62,6 +63,7 @@ export function WebhookCard({ webhook, onUpdate }: WebhookCardProps) {
     name: webhook.name,
     formType: webhook.formType as "typeform" | "google_forms" | "custom" | "tally",
     webhookSecret: webhook.webhookSecret || "",
+    scoringPrompt: webhook.scoringPrompt || "", // Add scoringPrompt
     isActive: webhook.isActive || false,
   });
 
@@ -100,7 +102,11 @@ export function WebhookCard({ webhook, onUpdate }: WebhookCardProps) {
   const handleSave = () => {
     updateMutation.mutate({
       id: webhook.id,
-      ...editData,
+      name: editData.name,
+      formType: editData.formType,
+      webhookSecret: editData.webhookSecret,
+      scoringPrompt: editData.scoringPrompt, // Include scoringPrompt in update
+      isActive: editData.isActive,
     });
   };
 
@@ -122,6 +128,7 @@ export function WebhookCard({ webhook, onUpdate }: WebhookCardProps) {
       name: webhook.name,
       formType: webhook.formType as "typeform" | "google_forms" | "custom" | "tally",
       webhookSecret: webhook.webhookSecret || "",
+      scoringPrompt: webhook.scoringPrompt || "", // Reset scoringPrompt
       isActive: webhook.isActive || false,
     });
     setIsEditing(false);
@@ -269,6 +276,19 @@ export function WebhookCard({ webhook, onUpdate }: WebhookCardProps) {
                 </Label>
               </div>
             </div>
+
+            <div>
+              <Label htmlFor="scoring-prompt" className="text-sm font-medium">
+                Scoring Prompt
+              </Label>
+              <Textarea
+                id="scoring-prompt"
+                value={editData.scoringPrompt}
+                onChange={(e) => setEditData(prev => ({ ...prev, scoringPrompt: e.target.value }))}
+                className="mt-1"
+                placeholder="Enter scoring prompt"
+              />
+            </div>
             <Separator />
           </>
         )}
@@ -350,7 +370,7 @@ export function WebhookCard({ webhook, onUpdate }: WebhookCardProps) {
             />
           ) : (
             <Input
-              value={showSecret ? webhook.webhookSecret : "••••••••••••••••"}
+                value={showSecret ? (webhook.webhookSecret || "") : "••••••••••••••••"}
               readOnly
               className="font-mono text-sm bg-muted"
             />

@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Textarea } from "@/components/ui/textarea"; // Import Textarea
 import { Plus, Loader2, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { trpc } from "@/trpc/react";
@@ -28,6 +29,7 @@ const webhookFormSchema = z.object({
     required_error: "Please select a form type",
   }),
   webhookSecret: z.string().optional(),
+  scoringPrompt: z.string().min(1, "Scoring prompt is required"), // Add scoringPrompt field
 });
 
 type WebhookFormData = z.infer<typeof webhookFormSchema>;
@@ -52,6 +54,7 @@ export function AddWebhookDialog({ onWebhookAdded }: AddWebhookDialogProps) {
       name: "",
       formType: undefined,
       webhookSecret: generateWebhookSecret(),
+      scoringPrompt: "", // Set default value for scoringPrompt
     },
   });
 
@@ -62,6 +65,7 @@ export function AddWebhookDialog({ onWebhookAdded }: AddWebhookDialogProps) {
         name: "",
         formType: undefined,
         webhookSecret: generateWebhookSecret(),
+        scoringPrompt: "", // Reset scoringPrompt
       });
       setOpen(false);
       onWebhookAdded();
@@ -169,6 +173,26 @@ export function AddWebhookDialog({ onWebhookAdded }: AddWebhookDialogProps) {
                   </div>
                   <FormDescription>
                     This secret will be used to verify webhook authenticity. You can generate a new one or use your own.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="scoringPrompt"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Scoring Prompt</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="e.g., Score this lead based on their interest in our product."
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Provide a prompt that will be used to score leads from this webhook.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

@@ -4,3 +4,5 @@ hooks/use-toast.ts
 .vscode/*
 .github/instructions/*
 components/theme/*
+supabase/*
+migrations/*

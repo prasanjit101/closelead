@@ -25,6 +25,7 @@ export const webhookRouter = createTRPCRouter({
                 name: z.string().min(1, "Webhook name is required"),
                 formType: z.enum(["typeform", "google_forms", "custom", "tally"]),
                 webhookSecret: z.string().optional(),
+                scoringPrompt: z.string().min(1, "Scoring prompt is required"),
             })
         )
         .mutation(async ({ ctx, input }) => {
@@ -41,6 +42,7 @@ export const webhookRouter = createTRPCRouter({
                     webhookUrl,
                     webhookSecret,
                     formType: input.formType,
+                    scoringPrompt: input.scoringPrompt,
                     isActive: true,
                     createdAt: new Date(),
                 })
@@ -73,6 +75,7 @@ export const webhookRouter = createTRPCRouter({
                 name: z.string().min(1).optional(),
                 formType: z.enum(["typeform", "google_forms", "custom", "tally"]).optional(),
                 webhookSecret: z.string().optional(),
+                scoringPrompt: z.string().min(1).optional(),
                 isActive: z.boolean().optional(),
             })
         )
