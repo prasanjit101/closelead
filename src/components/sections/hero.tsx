@@ -40,7 +40,7 @@ export const Hero = () => {
         </Button>
         <Button onClick={() =>
           signInGoogle({
-            callbackURL: env.NEXT_PUBLIC_APP_URL,
+            callbackURL: '/dashboard',
           })
         }>
           <ArrowRight />

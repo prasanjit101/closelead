@@ -12,7 +12,7 @@ import { Settings } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 
 export function Navbar({ session }: { session: Session }) {
-
+  console.log({ session });
   return (
     <nav className="sticky top-0 z-50 flex items-center justify-between border-b bg-white px-20 py-3 dark:bg-black">
       {/* Left: Logo */}
@@ -30,23 +30,6 @@ export function Navbar({ session }: { session: Session }) {
       {/* Right: User Profile Dropdown and Links */}
       <div className="flex items-center gap-3">
         <ThemeSwitcher />
-        <div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="icon" className="rounded-full">
-                <Settings />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem asChild>
-                <Link href="/settings">
-                  Settings
-                </Link>
-              </DropdownMenuItem>
-              {/* You can add more links here in the future */}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
         <UserProfileDropdown session={session} />
       </div>
     </nav>

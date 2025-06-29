@@ -20,7 +20,7 @@ export const LandingNav = () => {
             <Button
               onClick={() =>
                 signInGoogle({
-                  callbackURL: env.NEXT_PUBLIC_APP_URL,
+                  callbackURL: '/dashboard',
                 })
               }
               variant="ghost" className="flex items-center gap-1 text-sm font-semibold">
