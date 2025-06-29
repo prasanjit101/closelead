@@ -18,11 +18,13 @@ import {
   Bot,
   Webhook,
   MessageSquare,
-  UserCheck
+  UserCheck,
+  PlusCircle, // Added for adding links
+  Link as LinkIcon // Renamed to avoid conflict with HTML Link
 } from "lucide-react";
 import { toast } from "sonner";
 import { trpc } from "@/trpc/react";
-import type { AgentWithWebhooks } from "@/server/db/schema/agent";
+import type { AgentWithWebhooks, AgentLink } from "@/server/db/schema/agent";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -64,6 +66,7 @@ export function AgentCard({ agent, onUpdate }: AgentCardProps) {
     type: agent.type as "response_agent" | "followup_agent",
     webhookIds: agent.webhooks.map(w => w.id),
     isActive: agent.isActive || false,
+    links: agent.links || [], // Initialize links
   });
 
   const { data: webhooks } = trpc.webhook.getUserWebhooks.useQuery();
@@ -98,6 +101,7 @@ export function AgentCard({ agent, onUpdate }: AgentCardProps) {
       type: editData.type,
       webhookIds: editData.webhookIds,
       isActive: editData.isActive,
+      links: editData.links, // Include links in update mutation
     });
   };
 
@@ -113,6 +117,7 @@ export function AgentCard({ agent, onUpdate }: AgentCardProps) {
       type: agent.type as "response_agent" | "followup_agent",
       webhookIds: agent.webhooks.map(w => w.id),
       isActive: agent.isActive || false,
+      links: agent.links || [], // Reset links on cancel
     });
     setIsEditing(false);
   };
@@ -316,10 +321,112 @@ export function AgentCard({ agent, onUpdate }: AgentCardProps) {
               </div>
             </div>
             <Separator />
+
+            {/* Links - Editing Mode */}
+            <div>
+              <Label className="text-sm font-medium flex items-center gap-2 mb-2">
+                <LinkIcon className="h-4 w-4" />
+                Links
+              </Label>
+              <div className="space-y-3">
+                {editData.links.length > 0 ? (
+                  editData.links.map((link, index) => (
+                    <div key={index} className="flex flex-col gap-2 p-3 border rounded-md">
+                      <div className="flex items-center justify-between">
+                        <Label htmlFor={`link-name-${index}`} className="text-sm font-medium">
+                          Link {index + 1}
+                        </Label>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => {
+                            setEditData(prev => ({
+                              ...prev,
+                              links: prev.links.filter((_, i) => i !== index)
+                            }));
+                          }}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      <div>
+                        <Label htmlFor={`link-name-${index}`} className="text-xs">Name</Label>
+                        <Input
+                          id={`link-name-${index}`}
+                          value={link.name}
+                          onChange={(e) => {
+                            setEditData(prev => ({
+                              ...prev,
+                              links: prev.links.map((l, i) =>
+                                i === index ? { ...l, name: e.target.value } : l
+                              )
+                            }));
+                          }}
+                          className="mt-1 text-sm"
+                          placeholder="Link name"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor={`link-url-${index}`} className="text-xs">URL</Label>
+                        <Input
+                          id={`link-url-${index}`}
+                          value={link.url}
+                          onChange={(e) => {
+                            setEditData(prev => ({
+                              ...prev,
+                              links: prev.links.map((l, i) =>
+                                i === index ? { ...l, url: e.target.value } : l
+                              )
+                            }));
+                          }}
+                          className="mt-1 text-sm"
+                          placeholder="https://example.com"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor={`link-description-${index}`} className="text-xs">Description (Optional)</Label>
+                        <Textarea
+                          id={`link-description-${index}`}
+                          value={link.description || ""}
+                          onChange={(e) => {
+                            setEditData(prev => ({
+                              ...prev,
+                              links: prev.links.map((l, i) =>
+                                i === index ? { ...l, description: e.target.value } : l
+                              )
+                            }));
+                          }}
+                          className="mt-1 text-sm"
+                          placeholder="Brief description of the link"
+                          rows={1}
+                        />
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-sm text-muted-foreground">No links added yet.</p>
+                )}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setEditData(prev => ({
+                      ...prev,
+                      links: [...prev.links, { name: "", url: "", description: "" }]
+                    }));
+                  }}
+                  className="w-full"
+                >
+                  <PlusCircle className="h-4 w-4 mr-2" />
+                  Add Link
+                </Button>
+              </div>
+            </div>
+            <Separator />
           </>
         )}
 
-        {/* Trigger Webhooks */}
+        {/* Trigger Webhooks - Display Mode */}
         {!isEditing && (
           <div>
             <Label className="text-sm font-medium flex items-center gap-2">
@@ -335,6 +442,36 @@ export function AgentCard({ agent, onUpdate }: AgentCardProps) {
                 ))
               ) : (
                 <span className="text-sm text-muted-foreground">No webhooks configured</span>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Links */}
+        {!isEditing && (
+          <div>
+            <Label className="text-sm font-medium">Links</Label>
+            <div className="mt-2 space-y-2">
+              {agent.links && agent.links.length > 0 ? (
+                agent.links.map((link, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <a
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline text-sm"
+                    >
+                      {link.name}
+                    </a>
+                    {link.description && (
+                      <span className="text-xs text-muted-foreground">
+                        ({link.description})
+                      </span>
+                    )}
+                  </div>
+                ))
+              ) : (
+                <span className="text-sm text-muted-foreground">No links provided</span>
               )}
             </div>
           </div>

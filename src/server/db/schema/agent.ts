@@ -13,6 +13,14 @@ export const agentType = ["response_agent", "followup_agent"] as const;
 export type AgentType = (typeof agentType)[number];
 export const agentTypeSchema = z.enum(agentType);
 
+
+export const agentLinkSchema = z.object({
+    name: z.string(),
+    url: z.string(),
+    description: z.string().optional(),
+});
+export type AgentLink = z.infer<typeof agentLinkSchema>;
+
 export const agent = sqliteTable("agent", {
     id: text("id").primaryKey(),
     userId: text("user_id").references(() => user.id, { onDelete: "cascade" }),
@@ -20,6 +28,7 @@ export const agent = sqliteTable("agent", {
     description: text("description"),
     systemPrompt: text("system_prompt").notNull(),
     type: text("type", { enum: agentType }).notNull(),
+    links: text("links", { mode: "json" }).$type<AgentLink[]>(), // JSON field for agent links
     metadata: text("metadata"), // JSON field for agent metadata
     isActive: integer("is_active", { mode: "boolean" }).default(true),
     createdAt: integer("created_at", { mode: "timestamp" }).notNull().default(sql`(unixepoch())`),
@@ -30,9 +39,8 @@ export const agent = sqliteTable("agent", {
 export const agentWebhooks = sqliteTable("agent_webhooks", {
     agentId: text("agent_id").references(() => agent.id, { onDelete: "cascade" }).notNull(),
     webhookId: text("webhook_id").references(() => webhooks.id, { onDelete: "cascade" }).notNull(),
-}, (table) => ({
-    pk: primaryKey({ columns: [table.agentId, table.webhookId] }),
-}));
+}, (table) => [primaryKey({ columns: [table.agentId, table.webhookId] })]);
+
 
 // Relations
 export const agentRelations = relations(agent, ({ one, many }) => ({

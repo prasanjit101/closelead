@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { eq, and } from "drizzle-orm";
-import { agent, agentWebhooks, agentTypeSchema } from "@/server/db/schema/agent";
+import { agent, agentWebhooks, agentTypeSchema, agentLinkSchema } from "@/server/db/schema/agent";
 import { webhooks } from "@/server/db/schema/webhook";
 import { createId } from "@paralleldrive/cuid2";
 
@@ -56,18 +56,7 @@ export const agentRouter = createTRPCRouter({
     getUserAgents: protectedProcedure.query(async ({ ctx }) => {
         // Get agents with their associated webhooks
         const userAgents = await ctx.db
-            .select({
-                id: agent.id,
-                userId: agent.userId,
-                name: agent.name,
-                description: agent.description,
-                systemPrompt: agent.systemPrompt,
-                type: agent.type,
-                metadata: agent.metadata,
-                isActive: agent.isActive,
-                createdAt: agent.createdAt,
-                updatedAt: agent.updatedAt,
-            })
+            .select()
             .from(agent)
             .where(eq(agent.userId, ctx.session.user.id))
             .orderBy(agent.createdAt);
@@ -136,6 +125,7 @@ export const agentRouter = createTRPCRouter({
                 webhookIds: z.array(z.string()).optional(),
                 metadata: z.string().optional(),
                 isActive: z.boolean().optional(),
+                links: z.array(agentLinkSchema).optional(), // Add links to the update schema
             })
         )
         .mutation(async ({ ctx, input }) => {
