@@ -269,26 +269,6 @@ export function GmailIntegrationCard({
             </div>
           </>
         )}
-
-        {/* Capabilities */}
-        <Separator />
-        <div className="space-y-2">
-          <h4 className="text-sm font-medium">Capabilities</h4>
-          <div className="grid grid-cols-1 gap-2 text-sm text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <Mail className="h-4 w-4" />
-              Send automated follow-up emails
-            </div>
-            <div className="flex items-center gap-2">
-              <Mail className="h-4 w-4" />
-              Send personalized outreach emails
-            </div>
-            <div className="flex items-center gap-2">
-              <Mail className="h-4 w-4" />
-              Track email delivery status
-            </div>
-          </div>
-        </div>
       </CardContent>
     </Card>
   );

@@ -8,6 +8,7 @@ import {
 import { createId } from "@paralleldrive/cuid2";
 import { composioService } from "@/lib/services/composio";
 import { TRPCError } from "@trpc/server";
+import { env } from "@/env";
 
 export const integrationsRouter = createTRPCRouter({
   getUserIntegrations: protectedProcedure.query(async ({ ctx }) => {
@@ -63,7 +64,7 @@ export const integrationsRouter = createTRPCRouter({
       // Initiate connection with Composio
       const connectionResponse = await composioService.initiateConnection(
         entityId,
-        "gmail",
+        env.COMPOSIO_INTEGRATION_ID,
       );
 
       if (existingIntegration) {

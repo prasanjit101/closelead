@@ -21,6 +21,7 @@ export const env = createEnv({
     RESEND_API_KEY: z.string(),
     OPENAI_API_KEY: z.string(),
     COMPOSIO_API_KEY: z.string(),
+    COMPOSIO_INTEGRATION_ID: z.string(),
   },
 
   /**
@@ -50,6 +51,7 @@ export const env = createEnv({
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
     COMPOSIO_API_KEY: process.env.COMPOSIO_API_KEY,
+    COMPOSIO_INTEGRATION_ID: process.env.COMPOSIO_INTEGRATION_ID,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

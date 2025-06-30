@@ -62,7 +62,7 @@ export class ComposioService {
   }
 
   // Connection Management
-  async initiateConnection(entityId: string, integrationId: string = "gmail") {
+  async initiateConnection(entityId: string, integrationId: string) {
     return this.makeRequest("/connections/initiate", {
       method: "POST",
       body: JSON.stringify({

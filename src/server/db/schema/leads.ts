@@ -23,6 +23,7 @@ export const leads = sqliteTable("leads", {
   id: text("id").primaryKey(),
   userId: text("user_id").references(() => user.id),
   webhookId: text("webhook_id").references(() => webhooks.id),
+  webhookName: text("webhook_name"),
   name: text("name").notNull(),
   email: text("email").notNull(),
   rawData: text("raw_data"), // JSON field for form submission
