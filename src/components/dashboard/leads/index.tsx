@@ -4,20 +4,23 @@ import { useEffect, useState } from "react";
 import { useLeads } from "@/hooks/use-leads";
 import { trpc } from "@/trpc/react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import {
-  TableBody,
-  TableCell,
-  TableColumnHeader,
-  TableHead,
-  TableHeader,
-  TableHeaderGroup,
-  TableProvider,
-  TableRow,
-} from '@/components/ui/kibo-ui/table';
-import type { ColumnDef } from '@/components/ui/kibo-ui/table';
 import { ChevronRightIcon, RefreshCwIcon } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-
+import { DataTable } from "@/components/data-table/data-table";
+import { DataTableToolbar } from "@/components/data-table/data-table-toolbar";
+import { useDataTable } from "@/hooks/use-data-table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import type { Column, ColumnDef } from "@tanstack/react-table";
+import { parseAsArrayOf, parseAsString, useQueryState } from "nuqs";
+import { DataTableSortList } from "@/components/data-table/data-table-sort-list";
+import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
 
 export default function Leads() {
   const { data, isLoading, error, refetch } = trpc.lead.getLeads.useQuery();
@@ -53,7 +56,7 @@ export default function Leads() {
     {
       accessorKey: 'name',
       header: ({ column }) => (
-        <TableColumnHeader column={column} title="Name" />
+        <DataTableColumnHeader column={column} title="Name" />
       ),
       cell: ({ row }) => (
         <p>{row.original.name}</p>
@@ -62,7 +65,7 @@ export default function Leads() {
     {
       accessorKey: 'email',
       header: ({ column }) => (
-        <TableColumnHeader column={column} title="Email" />
+        <DataTableColumnHeader column={column} title="Email" />
       ),
       cell: ({ row }) =>
         <p>{row.original.email}</p>
@@ -70,7 +73,7 @@ export default function Leads() {
     {
       accessorKey: 'score',
       header: ({ column }) => (
-        <TableColumnHeader column={column} title="Score" />
+        <DataTableColumnHeader column={column} title="Score" />
       ),
       cell: ({ row }) =>
         <p>{row.original.score}</p>
@@ -79,14 +82,14 @@ export default function Leads() {
       id: 'scoreBreakdown',
       accessorFn: (row) => row.scoreBreakdown,
       header: ({ column }) => (
-        <TableColumnHeader column={column} title="Score Breakdown" />
+        <DataTableColumnHeader column={column} title="Score Breakdown" />
       ),
       cell: ({ row }) => row.original.scoreBreakdown,
     },
     {
       accessorKey: 'Webhook Source',
       header: ({ column }) => (
-        <TableColumnHeader column={column} title="Webhook Source" />
+        <DataTableColumnHeader column={column} title="Webhook Source" />
       ),
       cell: ({ row }) =>
         <p>{row.original.webhookName}</p>
@@ -94,7 +97,7 @@ export default function Leads() {
     {
       accessorKey: 'Created At',
       header: ({ column }) => (
-        <TableColumnHeader column={column} title="Created At" />
+        <DataTableColumnHeader column={column} title="Created At" />
       ),
       cell: ({ row }) =>
         row.original.createdAt ? new Intl.DateTimeFormat('en-US', {
@@ -104,7 +107,7 @@ export default function Leads() {
     {
       accessorKey: 'Updated At',
       header: ({ column }) => (
-        <TableColumnHeader column={column} title="Updated At" />
+        <DataTableColumnHeader column={column} title="Updated At" />
       ),
       cell: ({ row }) =>
         row.original.updatedAt ? new Intl.DateTimeFormat('en-US', {
@@ -112,6 +115,16 @@ export default function Leads() {
         }).format(row.original.updatedAt) : 'N/A',
     },
   ];
+
+  const { table } = useDataTable({
+    data: leads,
+    columns,
+    pageCount: 10,
+    initialState: {
+      sorting: [{ id: "createdAt", desc: true }],
+    },
+    getRowId: (row) => row.id,
+  });
 
   if (isLoading) {
     return (
@@ -142,22 +155,11 @@ export default function Leads() {
           Refresh
         </Button>
       </div>
-      <TableProvider columns={columns} data={leads}>
-        <TableHeader>
-          {({ headerGroup }) => (
-            <TableHeaderGroup headerGroup={headerGroup} key={headerGroup.id}>
-              {({ header }) => <TableHead header={header} key={header.id} />}
-            </TableHeaderGroup>
-          )}
-        </TableHeader>
-        <TableBody>
-          {({ row }) => (
-            <TableRow key={row.id} row={row}>
-              {({ cell }) => <TableCell cell={cell} key={cell.id} />}
-            </TableRow>
-          )}
-        </TableBody>
-      </TableProvider>
+      <DataTable table={table}>
+        <DataTableToolbar table={table}>
+          <DataTableSortList table={table} />
+        </DataTableToolbar>
+      </DataTable>
     </div>
   );
 }
