@@ -7,6 +7,7 @@ import {
 } from "@/server/db/schema/integrations";
 import { createId } from "@paralleldrive/cuid2";
 import { composioService } from "@/lib/services/composio";
+import { TRPCError } from "@trpc/server";
 
 export const integrationsRouter = createTRPCRouter({
   getUserIntegrations: protectedProcedure.query(async ({ ctx }) => {
@@ -37,9 +38,124 @@ export const integrationsRouter = createTRPCRouter({
     }),
 
   initiateGmailConnection: protectedProcedure.mutation(async ({ ctx }) => {
+    const userId = ctx.session.user.id;
+
     try {
-      // Check if Gmail integration already exists
+      // Check if user already has a Gmail integration
       const existingIntegration = await ctx.db
+        .select()
+        .from(integrations)
+        .where(
+          and(eq(integrations.userId, userId), eq(integrations.type, "gmail")),
+        )
+        .get();
+
+      // Create or get entity for user
+      const entityId = userId; // Using userId as entityId for simplicity
+
+      try {
+        await composioService.getEntity(entityId);
+      } catch (_error) {
+        // Entity doesn't exist, create it
+        await composioService.createEntity(entityId);
+      }
+
+      // Initiate connection with Composio
+      const connectionResponse = await composioService.initiateConnection(
+        entityId,
+        "gmail",
+      );
+
+      if (existingIntegration) {
+        // Update existing integration
+        await ctx.db
+          .update(integrations)
+          .set({
+            status: "pending",
+            connectionId: connectionResponse.connectionId,
+            errorMessage: null,
+            updatedAt: new Date(),
+          })
+          .where(eq(integrations.id, existingIntegration.id));
+      } else {
+        // Create new integration
+        await ctx.db.insert(integrations).values({
+          id: createId(),
+          userId,
+          type: "gmail",
+          status: "pending",
+          connectionId: connectionResponse.connectionId,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
+      }
+
+      return {
+        redirectUrl: connectionResponse.redirectUrl,
+        connectionId: connectionResponse.connectionId,
+      };
+    } catch (error) {
+      console.error("Error initiating Gmail connection:", error);
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to initiate Gmail connection",
+      });
+    }
+  }),
+
+  checkConnectionStatus: protectedProcedure
+    .input(z.object({ connectionId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const connection = await composioService.getConnection(
+          input.connectionId,
+        );
+
+        // Update integration status in database
+        const integration = await ctx.db
+          .select()
+          .from(integrations)
+          .where(
+            and(
+              eq(integrations.userId, ctx.session.user.id),
+              eq(integrations.connectionId, input.connectionId),
+            ),
+          )
+          .get();
+
+        if (integration) {
+          const status =
+            connection.status === "ACTIVE"
+              ? "connected"
+              : connection.status === "ERROR"
+                ? "error"
+                : "pending";
+
+          await ctx.db
+            .update(integrations)
+            .set({
+              status,
+              updatedAt: new Date(),
+            })
+            .where(eq(integrations.id, integration.id));
+        }
+
+        return {
+          status: connection.status,
+          isActive: connection.status === "ACTIVE",
+        };
+      } catch (error) {
+        console.error("Error checking connection status:", error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to check connection status",
+        });
+      }
+    }),
+
+  disconnectGmail: protectedProcedure.mutation(async ({ ctx }) => {
+    try {
+      const integration = await ctx.db
         .select()
         .from(integrations)
         .where(
@@ -50,267 +166,76 @@ export const integrationsRouter = createTRPCRouter({
         )
         .get();
 
-      let entityId: string;
-      let integrationRecord;
-
-      if (existingIntegration) {
-        entityId = existingIntegration.entityId!;
-        integrationRecord = existingIntegration;
-      } else {
-        // Create Composio entity
-        const entity = await composioService.createEntity(
-          `user_${ctx.session.user.id}_${Date.now()}`,
-        );
-        entityId = entity.id;
-
-        // Create integration record
-        integrationRecord = await ctx.db
-          .insert(integrations)
-          .values({
-            id: createId(),
-            userId: ctx.session.user.id,
-            type: "gmail",
-            name: "Gmail Integration",
-            status: "pending",
-            entityId: entityId,
-            isActive: true,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          })
-          .returning()
-          .get();
+      if (!integration) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Gmail integration not found",
+        });
       }
 
-      // Initiate connection
-      const connectionResponse = await composioService.initiateConnection(
-        entityId,
-        "gmail",
-      );
+      // Delete connection from Composio if it exists
+      if (integration.connectionId) {
+        try {
+          await composioService.deleteConnection(integration.connectionId);
+        } catch (error) {
+          console.error("Error deleting Composio connection:", error);
+          // Continue with local cleanup even if Composio deletion fails
+        }
+      }
 
-      // Update integration with connection details
+      // Update integration status
       await ctx.db
         .update(integrations)
         .set({
-          connectionId: connectionResponse.connectionId,
-          status: "pending",
+          status: "disconnected",
+          connectionId: null,
+          errorMessage: null,
           updatedAt: new Date(),
         })
-        .where(eq(integrations.id, integrationRecord.id));
+        .where(eq(integrations.id, integration.id));
 
-      return {
-        integrationId: integrationRecord.id,
-        redirectUrl: connectionResponse.redirectUrl,
-        connectionId: connectionResponse.connectionId,
-      };
+      return { success: true };
     } catch (error) {
-      console.error("Error initiating Gmail connection:", error);
-      throw new Error("Failed to initiate Gmail connection");
+      console.error("Error disconnecting Gmail:", error);
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to disconnect Gmail",
+      });
     }
   }),
 
-  handleConnectionCallback: protectedProcedure
-    .input(
-      z.object({
-        connectionId: z.string(),
-        status: z.enum(["success", "error"]),
-        error: z.string().optional(),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      try {
-        // Find integration by connection ID
-        const integration = await ctx.db
-          .select()
-          .from(integrations)
-          .where(
-            and(
-              eq(integrations.connectionId, input.connectionId),
-              eq(integrations.userId, ctx.session.user.id),
-            ),
-          )
-          .get();
+  testGmailConnection: protectedProcedure.mutation(async ({ ctx }) => {
+    try {
+      const integration = await ctx.db
+        .select()
+        .from(integrations)
+        .where(
+          and(
+            eq(integrations.userId, ctx.session.user.id),
+            eq(integrations.type, "gmail"),
+            eq(integrations.status, "connected"),
+          ),
+        )
+        .get();
 
-        if (!integration) {
-          throw new Error("Integration not found");
-        }
-
-        if (input.status === "success") {
-          // Test the connection
-          const isActive = await composioService.testGmailConnection(
-            input.connectionId,
-          );
-
-          await ctx.db
-            .update(integrations)
-            .set({
-              status: isActive ? "connected" : "error",
-              errorMessage: isActive ? null : "Connection test failed",
-              lastSyncAt: isActive ? new Date() : null,
-              updatedAt: new Date(),
-            })
-            .where(eq(integrations.id, integration.id));
-
-          return { success: isActive };
-        } else {
-          await ctx.db
-            .update(integrations)
-            .set({
-              status: "error",
-              errorMessage: input.error || "Connection failed",
-              updatedAt: new Date(),
-            })
-            .where(eq(integrations.id, integration.id));
-
-          return { success: false, error: input.error };
-        }
-      } catch (error) {
-        console.error("Error handling connection callback:", error);
-        throw new Error("Failed to handle connection callback");
+      if (!integration || !integration.connectionId) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "No active Gmail connection found",
+        });
       }
-    }),
 
-  disconnectIntegration: protectedProcedure
-    .input(z.object({ id: z.string() }))
-    .mutation(async ({ ctx, input }) => {
-      try {
-        // Verify integration belongs to user
-        const integration = await ctx.db
-          .select()
-          .from(integrations)
-          .where(
-            and(
-              eq(integrations.id, input.id),
-              eq(integrations.userId, ctx.session.user.id),
-            ),
-          )
-          .get();
+      const isWorking = await composioService.testGmailConnection(
+        integration.connectionId,
+      );
 
-        if (!integration) {
-          throw new Error("Integration not found or unauthorized");
-        }
-
-        // Delete connection from Composio if it exists
-        if (integration.connectionId) {
-          try {
-            await composioService.deleteConnection(integration.connectionId);
-          } catch (error) {
-            console.warn("Failed to delete Composio connection:", error);
-          }
-        }
-
-        // Update integration status
-        await ctx.db
-          .update(integrations)
-          .set({
-            status: "disconnected",
-            connectionId: null,
-            errorMessage: null,
-            lastSyncAt: null,
-            updatedAt: new Date(),
-          })
-          .where(eq(integrations.id, input.id));
-
-        return { success: true };
-      } catch (error) {
-        console.error("Error disconnecting integration:", error);
-        throw new Error("Failed to disconnect integration");
-      }
-    }),
-
-  testConnection: protectedProcedure
-    .input(z.object({ id: z.string() }))
-    .mutation(async ({ ctx, input }) => {
-      try {
-        // Verify integration belongs to user
-        const integration = await ctx.db
-          .select()
-          .from(integrations)
-          .where(
-            and(
-              eq(integrations.id, input.id),
-              eq(integrations.userId, ctx.session.user.id),
-            ),
-          )
-          .get();
-
-        if (!integration || !integration.connectionId) {
-          throw new Error("Integration not found or not connected");
-        }
-
-        // Test the connection
-        const isActive = await composioService.testGmailConnection(
-          integration.connectionId,
-        );
-
-        // Update integration status
-        await ctx.db
-          .update(integrations)
-          .set({
-            status: isActive ? "connected" : "error",
-            errorMessage: isActive ? null : "Connection test failed",
-            lastSyncAt: isActive ? new Date() : null,
-            updatedAt: new Date(),
-          })
-          .where(eq(integrations.id, input.id));
-
-        return { success: isActive };
-      } catch (error) {
-        console.error("Error testing connection:", error);
-        throw new Error("Failed to test connection");
-      }
-    }),
-
-  sendTestEmail: protectedProcedure
-    .input(
-      z.object({
-        integrationId: z.string(),
-        to: z.string().email(),
-        subject: z.string(),
-        body: z.string(),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      try {
-        // Verify integration belongs to user and is connected
-        const integration = await ctx.db
-          .select()
-          .from(integrations)
-          .where(
-            and(
-              eq(integrations.id, input.integrationId),
-              eq(integrations.userId, ctx.session.user.id),
-              eq(integrations.status, "connected"),
-            ),
-          )
-          .get();
-
-        if (!integration || !integration.connectionId) {
-          throw new Error("Integration not found or not connected");
-        }
-
-        // Send email via Composio
-        const result = await composioService.sendEmail(
-          integration.connectionId,
-          {
-            to: input.to,
-            subject: input.subject,
-            body: input.body,
-          },
-        );
-
-        // Update last sync time
-        await ctx.db
-          .update(integrations)
-          .set({
-            lastSyncAt: new Date(),
-            updatedAt: new Date(),
-          })
-          .where(eq(integrations.id, input.integrationId));
-
-        return { success: true, result };
-      } catch (error) {
-        console.error("Error sending test email:", error);
-        throw new Error("Failed to send test email");
-      }
-    }),
+      return { success: isWorking };
+    } catch (error) {
+      console.error("Error testing Gmail connection:", error);
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to test Gmail connection",
+      });
+    }
+  }),
 });

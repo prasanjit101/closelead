@@ -37,7 +37,7 @@ export function Navbar({ session }: { session: Session }) {
               size="sm"
               className={cn(
                 "h-8",
-                pathname === item.href ? " text-primary" : "text-foreground",
+                pathname === item.href ? "text-primary" : "text-foreground",
               )}
             >
               {item.label}

@@ -3,7 +3,6 @@
 import { trpc } from "@/trpc/react";
 import { WebhookCard } from "./WebhookCard";
 import { AddWebhookDialog } from "./AddWebhookDialog";
-import { Card, CardContent } from "@/components/ui/card";
 import { Loader2, Webhook, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
@@ -65,7 +64,7 @@ export function WebhooksList() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-lg font-semibold">Webhooks</h2>
-          <p className="text-muted-foreground text-sm">
+          <p className="text-sm text-muted-foreground">
             Manage your webhook endpoints for receiving form submissions.
           </p>
         </div>
@@ -79,7 +78,7 @@ export function WebhooksList() {
             webhook={webhook}
             onUpdate={handleWebhookUpdate}
           />
-        ))} 
+        ))}
       </div>
     </div>
   );

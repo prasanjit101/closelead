@@ -4,9 +4,6 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import {
   Mail,
@@ -14,7 +11,6 @@ import {
   XCircle,
   AlertCircle,
   Loader2,
-  Send,
   Unplug,
   TestTube,
   ExternalLink,
@@ -33,19 +29,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 
 interface GmailIntegrationCardProps {
   integration?: Integration;
-  onUpdate: () => void;
 }
 
 const statusConfig = {
@@ -74,256 +60,161 @@ const statusConfig = {
 
 export function GmailIntegrationCard({
   integration,
-  onUpdate,
 }: GmailIntegrationCardProps) {
-  const [showTestDialog, setShowTestDialog] = useState(false);
-  const [testEmail, setTestEmail] = useState("");
-  const [testSubject, setTestSubject] = useState("Test Email from Closelead");
-  const [testBody, setTestBody] = useState(
-    "This is a test email sent from your Closelead Gmail integration. If you received this, your integration is working correctly!",
-  );
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [isTesting, setIsTesting] = useState(false);
+  const [isDisconnecting, setIsDisconnecting] = useState(false);
+
+  const utils = trpc.useUtils();
 
   const initiateConnectionMutation =
     trpc.integrations.initiateGmailConnection.useMutation({
-      onSuccess: (result) => {
-        // Redirect to Composio OAuth flow
-        window.location.href = result.redirectUrl;
+      onSuccess: (data) => {
+        // Redirect to Composio OAuth URL
+        window.location.href = data.redirectUrl;
       },
       onError: (error) => {
-        toast.error(error.message || "Failed to initiate Gmail connection");
+        toast.error("Failed to initiate Gmail connection");
+        console.error("Connection error:", error);
+        setIsConnecting(false);
       },
     });
 
-  const disconnectMutation =
-    trpc.integrations.disconnectIntegration.useMutation({
-      onSuccess: () => {
-        toast.success("Gmail integration disconnected successfully");
-        onUpdate();
-      },
-      onError: (error) => {
-        toast.error(error.message || "Failed to disconnect Gmail integration");
-      },
-    });
-
-  const testConnectionMutation = trpc.integrations.testConnection.useMutation({
-    onSuccess: (result) => {
-      if (result.success) {
-        toast.success("Gmail connection is working correctly");
-      } else {
-        toast.error("Gmail connection test failed");
-      }
-      onUpdate();
-    },
-    onError: (error) => {
-      toast.error(error.message || "Failed to test Gmail connection");
-    },
-  });
-
-  const sendTestEmailMutation = trpc.integrations.sendTestEmail.useMutation({
+  const disconnectMutation = trpc.integrations.disconnectGmail.useMutation({
     onSuccess: () => {
-      toast.success("Test email sent successfully!");
-      setShowTestDialog(false);
-      setTestEmail("");
+      toast.success("Gmail disconnected successfully");
+      utils.integrations.getUserIntegrations.invalidate();
+      setIsDisconnecting(false);
     },
     onError: (error) => {
-      toast.error(error.message || "Failed to send test email");
+      toast.error("Failed to disconnect Gmail");
+      console.error("Disconnect error:", error);
+      setIsDisconnecting(false);
     },
   });
 
-  const handleConnect = () => {
+  const testConnectionMutation =
+    trpc.integrations.testGmailConnection.useMutation({
+      onSuccess: (data) => {
+        if (data.success) {
+          toast.success("Gmail connection is working!");
+        } else {
+          toast.error("Gmail connection test failed");
+        }
+        setIsTesting(false);
+      },
+      onError: (error) => {
+        toast.error("Failed to test Gmail connection");
+        console.error("Test error:", error);
+        setIsTesting(false);
+      },
+    });
+
+  const status = integration?.status || "disconnected";
+  const statusInfo = statusConfig[status];
+  const StatusIcon = statusInfo.icon;
+
+  const handleConnect = async () => {
+    setIsConnecting(true);
     initiateConnectionMutation.mutate();
   };
 
-  const handleDisconnect = () => {
-    if (integration) {
-      disconnectMutation.mutate({ id: integration.id });
-    }
+  const handleDisconnect = async () => {
+    setIsDisconnecting(true);
+    disconnectMutation.mutate();
   };
 
-  const handleTestConnection = () => {
-    if (integration) {
-      testConnectionMutation.mutate({ id: integration.id });
-    }
+  const handleTest = async () => {
+    setIsTesting(true);
+    testConnectionMutation.mutate();
   };
 
-  const handleSendTestEmail = () => {
-    if (integration && testEmail) {
-      sendTestEmailMutation.mutate({
-        integrationId: integration.id,
-        to: testEmail,
-        subject: testSubject,
-        body: testBody,
-      });
-    }
-  };
-
-  const status = integration?.status || "disconnected";
-  const StatusIcon =
-    statusConfig[status as keyof typeof statusConfig]?.icon || XCircle;
-  const statusColor = statusConfig[status as keyof typeof statusConfig]?.color;
-  const statusLabel = statusConfig[status as keyof typeof statusConfig]?.label;
+  const isLoading = isConnecting || isDisconnecting || isTesting;
 
   return (
     <Card className="w-full">
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="rounded-lg bg-red-50 p-3 dark:bg-red-900/20">
-              <Mail className="h-6 w-6 text-red-600 dark:text-red-400" />
+            <div className="rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
+              <img src="/gmail.svg" alt="Gmail" width={24} height={24} />
             </div>
             <div>
-              <CardTitle className="flex items-center gap-2 text-xl">
+              <CardTitle className="flex items-center gap-2 text-lg font-semibold">
                 Gmail Integration
-                <StatusIcon
-                  className={`h-4 w-4 ${status === "pending" ? "animate-spin" : ""}`}
-                />
+                <Badge
+                  variant="outline"
+                  className={`ml-2 rounded-full ${statusInfo.color}`}
+                >
+                  <StatusIcon className="mr-1 h-3 w-3" />
+                  {statusInfo.label}
+                </Badge>
               </CardTitle>
-              <div className="mt-1 flex items-center gap-2">
-                <Badge className={statusColor}>{statusLabel}</Badge>
-                {integration?.lastSyncAt && (
-                  <span className="text-xs text-muted-foreground">
-                    Last sync:{" "}
-                    {new Date(integration.lastSyncAt).toLocaleString()}
-                  </span>
-                )}
-              </div>
             </div>
           </div>
-
           <div className="flex items-center gap-2">
-            {status === "connected" ? (
+            {status === "connected" && (
               <>
                 <Button
-                  size="sm"
                   variant="outline"
-                  onClick={handleTestConnection}
-                  disabled={testConnectionMutation.isPending}
-                  className="h-8"
+                  size="sm"
+                  onClick={handleTest}
+                  disabled={isLoading}
+                  className="flex items-center gap-2"
                 >
-                  <TestTube className="mr-1 h-4 w-4" />
+                  {isTesting ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <TestTube className="h-4 w-4" />
+                  )}
                   Test
                 </Button>
-                <Dialog open={showTestDialog} onOpenChange={setShowTestDialog}>
-                  <DialogTrigger asChild>
-                    <Button size="sm" variant="outline" className="h-8">
-                      <Send className="mr-1 h-4 w-4" />
-                      Send Test
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Send Test Email</DialogTitle>
-                      <DialogDescription>
-                        Send a test email to verify your Gmail integration is
-                        working correctly.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="space-y-4">
-                      <div>
-                        <Label htmlFor="test-email">Recipient Email</Label>
-                        <Input
-                          id="test-email"
-                          type="email"
-                          value={testEmail}
-                          onChange={(e) => setTestEmail(e.target.value)}
-                          placeholder="test@example.com"
-                          className="mt-1"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="test-subject">Subject</Label>
-                        <Input
-                          id="test-subject"
-                          value={testSubject}
-                          onChange={(e) => setTestSubject(e.target.value)}
-                          className="mt-1"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="test-body">Message</Label>
-                        <Textarea
-                          id="test-body"
-                          value={testBody}
-                          onChange={(e) => setTestBody(e.target.value)}
-                          className="mt-1"
-                          rows={4}
-                        />
-                      </div>
-                    </div>
-                    <DialogFooter>
-                      <Button
-                        variant="outline"
-                        onClick={() => setShowTestDialog(false)}
-                      >
-                        Cancel
-                      </Button>
-                      <Button
-                        onClick={handleSendTestEmail}
-                        disabled={!testEmail || sendTestEmailMutation.isPending}
-                      >
-                        {sendTestEmailMutation.isPending ? (
-                          <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Sending...
-                          </>
-                        ) : (
-                          <>
-                            <Send className="mr-2 h-4 w-4" />
-                            Send Test Email
-                          </>
-                        )}
-                      </Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button size="sm" variant="destructive" className="h-8">
-                      <Unplug className="mr-1 h-4 w-4" />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={isLoading}
+                      className="flex items-center gap-2 text-red-600 hover:text-red-700"
+                    >
+                      {isDisconnecting ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Unplug className="h-4 w-4" />
+                      )}
                       Disconnect
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>
-                        Disconnect Gmail Integration
-                      </AlertDialogTitle>
+                      <AlertDialogTitle>Disconnect Gmail</AlertDialogTitle>
                       <AlertDialogDescription>
-                        Are you sure you want to disconnect your Gmail
-                        integration? This will stop all automated email sending
-                        through Gmail.
+                        Are you sure you want to disconnect your Gmail account?
+                        This will stop all automated email functionality.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction
-                        onClick={handleDisconnect}
-                        className="hover:bg-destructive/90 bg-destructive text-destructive-foreground"
-                      >
+                      <AlertDialogAction onClick={handleDisconnect}>
                         Disconnect
                       </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
               </>
-            ) : (
+            )}
+            {status !== "connected" && (
               <Button
-                size="sm"
                 onClick={handleConnect}
-                disabled={initiateConnectionMutation.isPending}
-                className="h-8"
+                disabled={isLoading}
+                className="flex items-center gap-2"
               >
-                {initiateConnectionMutation.isPending ? (
-                  <>
-                    <Loader2 className="mr-1 h-4 w-4 animate-spin" />
-                    Connecting...
-                  </>
+                {isConnecting ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
-                  <>
-                    <ExternalLink className="mr-1 h-4 w-4" />
-                    Connect Gmail
-                  </>
+                  <ExternalLink className="h-4 w-4" />
                 )}
+                Connect Gmail
               </Button>
             )}
           </div>
@@ -335,34 +226,33 @@ export function GmailIntegrationCard({
         <div>
           <p className="text-sm text-muted-foreground">
             Connect your Gmail account to send automated emails to leads. This
-            integration uses Composio to securely connect with Gmail's API.
+            integration uses Composio to securely connect with Gmail&apos;s API.
           </p>
         </div>
 
-        <Separator />
-
-        {/* Features */}
-        <div>
-          <h4 className="mb-3 text-sm font-medium">Features</h4>
-          <div className="grid grid-cols-1 gap-2 text-sm md:grid-cols-2">
-            <div className="flex items-center gap-2">
-              <CheckCircle className="h-4 w-4 text-green-600" />
-              <span>Send automated follow-up emails</span>
+        {/* Connection Details */}
+        {integration && status === "connected" && (
+          <>
+            <Separator />
+            <div className="space-y-2">
+              <h4 className="text-sm font-medium">Connection Details</h4>
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <span className="text-muted-foreground">Status:</span>
+                  <span className="ml-2 font-medium text-green-600">
+                    Active
+                  </span>
+                </div>
+                <div>
+                  <span className="text-muted-foreground">Connected:</span>
+                  <span className="ml-2 font-medium">
+                    {integration.createdAt?.toLocaleDateString()}
+                  </span>
+                </div>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle className="h-4 w-4 text-green-600" />
-              <span>Personalized email content</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle className="h-4 w-4 text-green-600" />
-              <span>Lead scoring integration</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle className="h-4 w-4 text-green-600" />
-              <span>Email delivery tracking</span>
-            </div>
-          </div>
-        </div>
+          </>
+        )}
 
         {/* Error Message */}
         {integration?.errorMessage && (
@@ -380,21 +270,25 @@ export function GmailIntegrationCard({
           </>
         )}
 
-        {/* Connection Info */}
-        {integration && (
-          <>
-            <Separator />
-            <div className="text-xs text-muted-foreground">
-              <div className="flex justify-between">
-                <span>
-                  Created:{" "}
-                  {new Date(integration.createdAt).toLocaleDateString()}
-                </span>
-                <span>ID: {integration.id}</span>
-              </div>
+        {/* Capabilities */}
+        <Separator />
+        <div className="space-y-2">
+          <h4 className="text-sm font-medium">Capabilities</h4>
+          <div className="grid grid-cols-1 gap-2 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2">
+              <Mail className="h-4 w-4" />
+              Send automated follow-up emails
             </div>
-          </>
-        )}
+            <div className="flex items-center gap-2">
+              <Mail className="h-4 w-4" />
+              Send personalized outreach emails
+            </div>
+            <div className="flex items-center gap-2">
+              <Mail className="h-4 w-4" />
+              Track email delivery status
+            </div>
+          </div>
+        </div>
       </CardContent>
     </Card>
   );

@@ -3,7 +3,6 @@
 import { trpc } from "@/trpc/react";
 import { AgentCard } from "./AgentCard";
 import { AddAgentDialog } from "./AddAgentDialog";
-import { Card, CardContent } from "@/components/ui/card";
 import { Loader2, Bot, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
@@ -93,7 +92,7 @@ export function AgentsList() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-lg font-semibold">AI Agents</h2>
-          <p className="text-muted-foreground text-sm">
+          <p className="text-sm text-muted-foreground">
             Manage your AI agents for automated lead responses and follow-ups.
           </p>
         </div>

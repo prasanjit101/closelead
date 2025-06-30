@@ -1,6 +1,4 @@
 import { AgentsList } from "@/components/agents/AgentsList";
-import { validateSession } from "auth";
-import { redirect } from "next/navigation";
 
 export default async function AgentsPage() {
   return (

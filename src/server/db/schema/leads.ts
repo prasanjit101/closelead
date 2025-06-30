@@ -19,7 +19,6 @@ export const leadStatus = [
 export type LeadStatus = (typeof leadStatus)[number];
 export const leadStatusSchema = z.enum(leadStatus);
 
-
 export const leads = sqliteTable("leads", {
   id: text("id").primaryKey(),
   userId: text("user_id").references(() => user.id),

@@ -1,7 +1,11 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { eq } from "drizzle-orm";
-import { insertWebhookSchema, updateWebhookSchema, webhooks } from "@/server/db/schema/webhook";
+import {
+  insertWebhookSchema,
+  updateWebhookSchema,
+  webhooks,
+} from "@/server/db/schema/webhook";
 import { user } from "@/server/db/schema/user";
 import { createId } from "@paralleldrive/cuid2";
 import { env } from "@/env";

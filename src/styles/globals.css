@@ -37,39 +37,39 @@
       --sidebar-border: 220 13% 91%;
       --sidebar-ring: 217.2 91.2% 59.8%;
   }
-
+  
   .dark {
-    --background: ##141415;
-      --foreground: #f8fafc;
-      --card: #0f172a;
-      --card-foreground: #f8fafc;
-      --popover: #0f172a;
-      --popover-foreground: #f8fafc;
-      --primary: #3b75f0;
-        --primary-foreground: #f8fafc;
-    --secondary: #1e293b;
-      --secondary-foreground: #f8fafc;
-      --muted: #1e293b;
-      --muted-foreground: #94a3b8;
-      --accent: #1e293b;
-      --accent-foreground: #f8fafc;
-    --destructive: #7f1d1d;
-    --destructive-foreground: #f8fafc;
-    --border: #1e293b;
-      --input: #1e293b;
-      --ring: #1d4ed8;
-      --chart-1: #2662d9;
-      --chart-2: #2eb88a;
-      --chart-3: #e88c30;
-      --chart-4: #af57db;
-      --chart-5: #e23670;
-      --sidebar-background: 240 5.9% 10%;
-      --sidebar-foreground: 240 4.8% 95.9%;
-      --sidebar-primary: 224.3 76.3% 48%;
+    --background: #10131a;
+      --foreground: #f3f6fa;
+      --card: #181c24;
+      --card-foreground: #f3f6fa;
+      --popover: #181c24;
+      --popover-foreground: #f3f6fa;
+      --primary: #3b82f6;
+      --primary-foreground: #f3f6fa;
+      --secondary: #23293a;
+      --secondary-foreground: #e0e7ef;
+      --muted: #23293a;
+      --muted-foreground: #a3adc2;
+      --accent: #23293a;
+      --accent-foreground: #f3f6fa;
+      --destructive: #dc2626;
+      --destructive-foreground: #f3f6fa;
+      --border: #23293a;
+      --input: #23293a;
+      --ring: #2563eb;
+      --chart-1: #3b82f6;
+      --chart-2: #22d3ee;
+      --chart-3: #fbbf24;
+      --chart-4: #a78bfa;
+      --chart-5: #f472b6;
+      --sidebar-background: 225 10% 12%;
+      --sidebar-foreground: 220 13% 91%;
+      --sidebar-primary: 220 80% 56%;
       --sidebar-primary-foreground: 0 0% 100%;
-      --sidebar-accent: 240 3.7% 15.9%;
-      --sidebar-accent-foreground: 240 4.8% 95.9%;
-      --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-accent: 220 8% 18%;
+      --sidebar-accent-foreground: 220 13% 91%;
+      --sidebar-border: 220 8% 18%;
       --sidebar-ring: 217.2 91.2% 59.8%;
   }
 }

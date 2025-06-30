@@ -25,12 +25,11 @@ import {
   RefreshCw,
   Save,
   X,
-  ExternalLink,
   Globe,
 } from "lucide-react";
 import { toast } from "sonner";
 import { trpc } from "@/trpc/react";
-import type { Webhook, WebhookUpdate } from "@/server/db/schema";
+import type { Webhook } from "@/server/db/schema";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -58,7 +57,7 @@ export function WebhookCard({ webhook, onUpdate }: WebhookCardProps) {
   const [showSecret, setShowSecret] = useState(false);
   const [editData, setEditData] = useState({
     name: webhook.name,
-    formType: webhook.formType as Webhook['formType'],
+    formType: webhook.formType as Webhook["formType"],
     webhookSecret: webhook.webhookSecret || "",
     scoringPrompt: webhook.scoringPrompt || "", // Add scoringPrompt
     isActive: webhook.isActive || false,
@@ -126,7 +125,7 @@ export function WebhookCard({ webhook, onUpdate }: WebhookCardProps) {
   const handleCancel = () => {
     setEditData({
       name: webhook.name,
-      formType: webhook.formType as Webhook['formType'],
+      formType: webhook.formType as Webhook["formType"],
       webhookSecret: webhook.webhookSecret || "",
       scoringPrompt: webhook.scoringPrompt || "", // Reset scoringPrompt
       isActive: webhook.isActive || false,
@@ -158,17 +157,17 @@ export function WebhookCard({ webhook, onUpdate }: WebhookCardProps) {
               <div>
                 <CardTitle className="text-lg">{webhook.name}</CardTitle>
                 <div className="mt-1 flex items-center gap-2">
-                  <Badge
-                      className="rounded-full text-xs"
-                      variant="secondary"
-                  >
+                  <Badge className="rounded-full text-xs" variant="secondary">
                     {
                       formTypeLabels[
                         webhook.formType as keyof typeof formTypeLabels
                       ]
                     }
                   </Badge>
-                    <Badge className="rounded-full text-xs" variant={webhook.isActive ? "default" : "outline"}>
+                  <Badge
+                    className="rounded-full text-xs"
+                    variant={webhook.isActive ? "default" : "outline"}
+                  >
                     {webhook.isActive ? "Active" : "Inactive"}
                   </Badge>
                 </div>
@@ -201,17 +200,17 @@ export function WebhookCard({ webhook, onUpdate }: WebhookCardProps) {
             ) : (
               <>
                 <Button
-                    size="icon"
+                  size="icon"
                   variant="outline"
                   onClick={() => setIsEditing(true)}
                   className="h-8"
                 >
-                    <Edit className="mr-1 h-4 w-4" />
+                  <Edit className="mr-1 h-4 w-4" />
                 </Button>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                      <Button size="icon" variant="destructive" className="h-8">
-                        <Trash2 className="mr-1 h-4 w-4" />
+                    <Button size="icon" variant="destructive" className="h-8">
+                      <Trash2 className="mr-1 h-4 w-4" />
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
@@ -242,7 +241,7 @@ export function WebhookCard({ webhook, onUpdate }: WebhookCardProps) {
       <CardContent className="space-y-4">
         {isEditing && (
           <>
-            <div className="flex gap-4 w-full">
+            <div className="flex w-full gap-4">
               <div>
                 <Label htmlFor="form-type" className="text-sm font-medium">
                   Form Type
@@ -252,7 +251,7 @@ export function WebhookCard({ webhook, onUpdate }: WebhookCardProps) {
                   onValueChange={(value) =>
                     setEditData((prev) => ({
                       ...prev,
-                      formType: value as Webhook['formType'],
+                      formType: value as Webhook["formType"],
                     }))
                   }
                 >
@@ -267,9 +266,8 @@ export function WebhookCard({ webhook, onUpdate }: WebhookCardProps) {
               </div>
             </div>
 
-            {
-              isEditing && (
-                <div className="flex items-center space-x-2">
+            {isEditing && (
+              <div className="flex items-center space-x-2">
                 <Switch
                   id="is-active"
                   checked={editData.isActive}
@@ -280,9 +278,8 @@ export function WebhookCard({ webhook, onUpdate }: WebhookCardProps) {
                 <Label htmlFor="is-active" className="text-sm font-medium">
                   Active
                 </Label>
-                </div> 
-              )
-            }
+              </div>
+            )}
 
             <div>
               <Label htmlFor="scoring-prompt" className="text-sm font-medium">

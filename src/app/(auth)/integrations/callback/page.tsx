@@ -1,98 +1,115 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { trpc } from "@/trpc/react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2, CheckCircle, XCircle } from "lucide-react";
+import { CheckCircle, XCircle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
-export default function IntegrationCallbackPage() {
-  const searchParams = useSearchParams();
+export default function IntegrationsCallbackPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [status, setStatus] = useState<"loading" | "success" | "error">(
     "loading",
   );
   const [message, setMessage] = useState("");
 
-  const handleCallbackMutation =
-    trpc.integrations.handleConnectionCallback.useMutation({
-      onSuccess: (result) => {
-        if (result.success) {
-          setStatus("success");
-          setMessage("Gmail integration connected successfully!");
-          toast.success("Gmail integration connected successfully!");
-          setTimeout(() => {
-            router.push("/integrations");
-          }, 2000);
-        } else {
-          setStatus("error");
-          setMessage(result.error || "Connection failed");
-          toast.error("Failed to connect Gmail integration");
-        }
-      },
-      onError: (error) => {
-        setStatus("error");
-        setMessage(error.message);
-        toast.error("Failed to process connection callback");
-      },
-    });
+  const checkConnectionMutation =
+    trpc.integrations.checkConnectionStatus.useMutation();
 
   useEffect(() => {
     const connectionId = searchParams.get("connectionId");
-    const state = searchParams.get("state");
     const error = searchParams.get("error");
 
-    if (!connectionId) {
+    if (error) {
       setStatus("error");
-      setMessage("Missing connection ID");
+      setMessage(`Connection failed: ${error}`);
+      toast.error("Failed to connect Gmail");
       return;
     }
 
-    // Handle the callback
-    handleCallbackMutation.mutate({
-      connectionId,
-      status: error ? "error" : "success",
-      error: error || undefined,
-    });
-  }, [searchParams, handleCallbackMutation]);
+    if (!connectionId) {
+      setStatus("error");
+      setMessage("No connection ID provided");
+      toast.error("Invalid callback URL");
+      return;
+    }
+
+    // Poll for connection status
+    const checkConnection = async () => {
+      try {
+        const result = await checkConnectionMutation.mutateAsync({
+          connectionId,
+        });
+
+        if (result.isActive) {
+          setStatus("success");
+          setMessage("Gmail connected successfully!");
+          toast.success("Gmail connected successfully!");
+
+          // Redirect to integrations page after a short delay
+          setTimeout(() => {
+            router.push("/integrations");
+          }, 2000);
+        } else if (result.status === "ERROR") {
+          setStatus("error");
+          setMessage("Connection failed. Please try again.");
+          toast.error("Gmail connection failed");
+        } else {
+          // Still pending, check again after a delay
+          setTimeout(checkConnection, 2000);
+        }
+      } catch (error) {
+        console.error("Error checking connection:", error);
+        setStatus("error");
+        setMessage("Failed to verify connection status");
+        toast.error("Failed to verify connection");
+      }
+    };
+
+    checkConnection();
+  }, [searchParams, checkConnectionMutation, router]);
+
+  const handleRetry = () => {
+    router.push("/integrations");
+  };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-      <Card className="w-full max-w-md">
+    <div className="container mx-auto max-w-md px-4 py-12">
+      <Card>
         <CardHeader className="text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full">
+          <CardTitle className="flex items-center justify-center gap-2">
             {status === "loading" && (
-              <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+              <Loader2 className="h-6 w-6 animate-spin" />
             )}
             {status === "success" && (
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
-                <CheckCircle className="h-8 w-8 text-green-600" />
-              </div>
+              <CheckCircle className="h-6 w-6 text-green-600" />
             )}
-            {status === "error" && (
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
-                <XCircle className="h-8 w-8 text-red-600" />
-              </div>
-            )}
-          </div>
-          <CardTitle className="text-2xl">
-            {status === "loading" && "Processing Connection..."}
-            {status === "success" && "Connection Successful!"}
-            {status === "error" && "Connection Failed"}
+            {status === "error" && <XCircle className="h-6 w-6 text-red-600" />}
+            Gmail Integration
           </CardTitle>
         </CardHeader>
-        <CardContent className="text-center">
-          <p className="mb-6 text-muted-foreground">{message}</p>
+        <CardContent className="space-y-4 text-center">
+          <p className="text-muted-foreground">{message}</p>
 
-          {status !== "loading" && (
-            <Button
-              onClick={() => router.push("/integrations")}
-              className="w-full"
-            >
-              Return to Integrations
+          {status === "loading" && (
+            <div className="text-sm text-muted-foreground">
+              Verifying your Gmail connection...
+            </div>
+          )}
+
+          {status === "error" && (
+            <Button onClick={handleRetry} className="w-full">
+              Back to Integrations
             </Button>
+          )}
+
+          {status === "success" && (
+            <div className="text-sm text-muted-foreground">
+              Redirecting you back to integrations...
+            </div>
           )}
         </CardContent>
       </Card>

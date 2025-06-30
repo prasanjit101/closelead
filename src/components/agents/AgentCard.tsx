@@ -515,8 +515,9 @@ export function AgentCard({ agent, onUpdate }: AgentCardProps) {
         )}
 
         {/* System Prompt */}
-        {isEditing && <div>
-          <Label className="text-sm font-medium">System Prompt</Label>
+        {isEditing && (
+          <div>
+            <Label className="text-sm font-medium">System Prompt</Label>
             <Textarea
               value={editData.systemPrompt}
               onChange={(e) =>
@@ -529,7 +530,8 @@ export function AgentCard({ agent, onUpdate }: AgentCardProps) {
               placeholder="Enter system prompt"
               rows={4}
             />
-        </div>}
+          </div>
+        )}
       </CardContent>
     </Card>
   );
