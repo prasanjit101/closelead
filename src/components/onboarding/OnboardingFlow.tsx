@@ -6,21 +6,26 @@ import { WebhookStep } from "./WebhookStep";
 import { SuccessStep } from "./SuccessStep";
 
 export function OnboardingFlow() {
-    const [step, setStep] = useState<"welcome" | "webhook" | "success">("welcome");
+  const [step, setStep] = useState<"welcome" | "webhook" | "success">(
+    "welcome",
+  );
 
-    if (step === "welcome") {
-        return <WelcomeStep onNext={() => setStep("webhook")} />;
-    }
+  if (step === "welcome") {
+    return <WelcomeStep onNext={() => setStep("webhook")} />;
+  }
 
-    if (step === "webhook") {
-        return <WebhookStep onBack={() => setStep("welcome")} onSuccess={() => setStep("success")} />;
-    }
+  if (step === "webhook") {
+    return (
+      <WebhookStep
+        onBack={() => setStep("welcome")}
+        onSuccess={() => setStep("success")}
+      />
+    );
+  }
 
+  if (step === "success") {
+    return <SuccessStep />;
+  }
 
-
-    if (step === "success") {
-        return <SuccessStep />;
-    }
-
-    return null;
+  return null;
 }

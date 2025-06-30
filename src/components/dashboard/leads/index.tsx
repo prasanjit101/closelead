@@ -1,18 +1,24 @@
 "use client";
 
-import { useEffect, useState } from 'react';
-import { useLeads } from '@/hooks/use-leads';
-import { trpc } from '@/trpc/react';
-import { DataTable } from './data-table';
-import { columns } from './columns';
-import { ScoreBreakdownModal } from './ScoreBreakdownModal';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
-import { RefreshCw, TrendingUp, Users, Star, Clock } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Skeleton } from '@/components/ui/skeleton';
+import { useEffect, useState } from "react";
+import { useLeads } from "@/hooks/use-leads";
+import { trpc } from "@/trpc/react";
+import { DataTable } from "./data-table";
+import { columns } from "./columns";
+import { ScoreBreakdownModal } from "./ScoreBreakdownModal";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { RefreshCw, TrendingUp, Users, Star, Clock } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Leads() {
   const { data, isLoading, error, refetch } = trpc.lead.getLeads.useQuery();
@@ -42,33 +48,47 @@ export default function Leads() {
   // Calculate statistics
   const stats = {
     total: leads.length,
-    highScore: leads.filter(lead => (lead.score || 0) >= 8).length,
-    mediumScore: leads.filter(lead => (lead.score || 0) >= 6 && (lead.score || 0) < 8).length,
-    lowScore: leads.filter(lead => (lead.score || 0) < 6).length,
-    contacted: leads.filter(lead => lead.status === 'contacted').length,
-    newLeads: leads.filter(lead => lead.status === 'new').length,
-    avgScore: leads.length > 0 ? (leads.reduce((sum, lead) => sum + (lead.score || 0), 0) / leads.length).toFixed(1) : '0',
+    highScore: leads.filter((lead) => (lead.score || 0) >= 8).length,
+    mediumScore: leads.filter(
+      (lead) => (lead.score || 0) >= 6 && (lead.score || 0) < 8,
+    ).length,
+    lowScore: leads.filter((lead) => (lead.score || 0) < 6).length,
+    contacted: leads.filter((lead) => lead.status === "contacted").length,
+    newLeads: leads.filter((lead) => lead.status === "new").length,
+    avgScore:
+      leads.length > 0
+        ? (
+            leads.reduce((sum, lead) => sum + (lead.score || 0), 0) /
+            leads.length
+          ).toFixed(1)
+        : "0",
   };
 
   // Enhanced columns with score breakdown modal
-  const enhancedColumns = columns.map(column => {
-    if (column.accessorKey === 'score') {
+  const enhancedColumns = columns.map((column) => {
+    if (column.id === "score") {
       return {
         ...column,
         cell: ({ row }: any) => {
-          const score = row.getValue('score') as number | null;
+          const score = row.getValue("score") as number | null;
           const lead = row.original;
-          
+
           return (
             <div className="flex items-center gap-2">
-              <Badge className={`${
-                !score ? 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200' :
-                score >= 8 ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
-                score >= 6 ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
-                score >= 4 ? 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200' :
-                'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-              }`}>
-                {score ? `${score}/10` : 'N/A'}
+              <Badge
+                className={`${
+                  !score
+                    ? "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200"
+                    : score >= 8
+                      ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                      : score >= 6
+                        ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
+                        : score >= 4
+                          ? "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200"
+                          : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
+                }`}
+              >
+                {score ? `${score}/10` : "N/A"}
               </Badge>
               {lead.scoreBreakdown && (
                 <Button
@@ -100,15 +120,15 @@ export default function Leads() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto py-10 space-y-6">
+      <div className="container mx-auto space-y-6 py-10">
         <div className="flex items-center justify-between">
           <div>
-            <Skeleton className="h-8 w-32 mb-2" />
+            <Skeleton className="mb-2 h-8 w-32" />
             <Skeleton className="h-4 w-64" />
           </div>
           <Skeleton className="h-9 w-24" />
         </div>
-        
+
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {Array.from({ length: 4 }).map((_, i) => (
             <Card key={i}>
@@ -117,13 +137,13 @@ export default function Leads() {
                 <Skeleton className="h-4 w-4" />
               </CardHeader>
               <CardContent>
-                <Skeleton className="h-7 w-16 mb-1" />
+                <Skeleton className="mb-1 h-7 w-16" />
                 <Skeleton className="h-3 w-24" />
               </CardContent>
             </Card>
           ))}
         </div>
-        
+
         <Card>
           <CardHeader>
             <Skeleton className="h-6 w-32" />
@@ -153,7 +173,7 @@ export default function Leads() {
   }
 
   return (
-    <div className="container mx-auto py-10 space-y-6">
+    <div className="container mx-auto space-y-6 py-10">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -162,13 +182,15 @@ export default function Leads() {
             Manage and track your leads with AI-powered scoring and automation
           </p>
         </div>
-        <Button 
-          onClick={handleRefresh} 
+        <Button
+          onClick={handleRefresh}
           disabled={refreshing}
           variant="outline"
           size="sm"
         >
-          <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
+          <RefreshCw
+            className={`mr-2 h-4 w-4 ${refreshing ? "animate-spin" : ""}`}
+          />
           Refresh
         </Button>
       </div>
@@ -203,11 +225,15 @@ export default function Leads() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">High Score Leads</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              High Score Leads
+            </CardTitle>
             <Star className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">{stats.highScore}</div>
+            <div className="text-2xl font-bold text-green-600">
+              {stats.highScore}
+            </div>
             <p className="text-xs text-muted-foreground">
               Score 8+ (priority leads)
             </p>
@@ -222,7 +248,8 @@ export default function Leads() {
           <CardContent>
             <div className="text-2xl font-bold">{stats.contacted}</div>
             <p className="text-xs text-muted-foreground">
-              {((stats.contacted / stats.total) * 100 || 0).toFixed(1)}% contact rate
+              {((stats.contacted / stats.total) * 100 || 0).toFixed(1)}% contact
+              rate
             </p>
           </CardContent>
         </Card>
@@ -238,23 +265,25 @@ export default function Leads() {
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-3">
-            <div className="flex items-center justify-between p-3 border rounded-lg">
+            <div className="flex items-center justify-between rounded-lg border p-3">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-green-500 rounded-full" />
+                <div className="h-3 w-3 rounded-full bg-green-500" />
                 <span className="text-sm font-medium">High Quality (8-10)</span>
               </div>
               <Badge variant="secondary">{stats.highScore}</Badge>
             </div>
-            <div className="flex items-center justify-between p-3 border rounded-lg">
+            <div className="flex items-center justify-between rounded-lg border p-3">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-yellow-500 rounded-full" />
-                <span className="text-sm font-medium">Medium Quality (6-7)</span>
+                <div className="h-3 w-3 rounded-full bg-yellow-500" />
+                <span className="text-sm font-medium">
+                  Medium Quality (6-7)
+                </span>
               </div>
               <Badge variant="secondary">{stats.mediumScore}</Badge>
             </div>
-            <div className="flex items-center justify-between p-3 border rounded-lg">
+            <div className="flex items-center justify-between rounded-lg border p-3">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-red-500 rounded-full" />
+                <div className="h-3 w-3 rounded-full bg-red-500" />
                 <span className="text-sm font-medium">Low Quality (1-5)</span>
               </div>
               <Badge variant="secondary">{stats.lowScore}</Badge>
@@ -267,9 +296,13 @@ export default function Leads() {
       <Tabs defaultValue="all" className="space-y-4">
         <TabsList>
           <TabsTrigger value="all">All Leads ({stats.total})</TabsTrigger>
-          <TabsTrigger value="high-score">High Score ({stats.highScore})</TabsTrigger>
+          <TabsTrigger value="high-score">
+            High Score ({stats.highScore})
+          </TabsTrigger>
           <TabsTrigger value="new">New ({stats.newLeads})</TabsTrigger>
-          <TabsTrigger value="contacted">Contacted ({stats.contacted})</TabsTrigger>
+          <TabsTrigger value="contacted">
+            Contacted ({stats.contacted})
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="all" className="space-y-4">
@@ -291,13 +324,14 @@ export default function Leads() {
             <CardHeader>
               <CardTitle>High Score Leads</CardTitle>
               <CardDescription>
-                Priority leads with scores of 8 or higher - these are your best prospects
+                Priority leads with scores of 8 or higher - these are your best
+                prospects
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <DataTable 
-                columns={enhancedColumns} 
-                data={leads.filter(lead => (lead.score || 0) >= 8)} 
+              <DataTable
+                columns={enhancedColumns}
+                data={leads.filter((lead) => (lead.score || 0) >= 8)}
               />
             </CardContent>
           </Card>
@@ -312,9 +346,9 @@ export default function Leads() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <DataTable 
-                columns={enhancedColumns} 
-                data={leads.filter(lead => lead.status === 'new')} 
+              <DataTable
+                columns={enhancedColumns}
+                data={leads.filter((lead) => lead.status === "new")}
               />
             </CardContent>
           </Card>
@@ -329,9 +363,9 @@ export default function Leads() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <DataTable 
-                columns={enhancedColumns} 
-                data={leads.filter(lead => lead.status === 'contacted')} 
+              <DataTable
+                columns={enhancedColumns}
+                data={leads.filter((lead) => lead.status === "contacted")}
               />
             </CardContent>
           </Card>
@@ -342,30 +376,41 @@ export default function Leads() {
       {leads.length === 0 && (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
-            <Users className="h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-semibold mb-2">No leads yet</h3>
-            <p className="text-muted-foreground text-center max-w-md mb-6">
-              Your leads will appear here once you start receiving form submissions through your webhooks. 
-              Make sure your webhooks are properly configured and active.
+            <Users className="mb-4 h-12 w-12 text-muted-foreground" />
+            <h3 className="mb-2 text-lg font-semibold">No leads yet</h3>
+            <p className="mb-6 max-w-md text-center text-muted-foreground">
+              Your leads will appear here once you start receiving form
+              submissions through your webhooks. Make sure your webhooks are
+              properly configured and active.
             </p>
             <div className="flex gap-2">
-              <Button variant="outline" onClick={() => window.location.href = '/webhooks'}>
+              <Button
+                variant="outline"
+                onClick={() => (window.location.href = "/webhooks")}
+              >
                 Configure Webhooks
               </Button>
-              <Button variant="outline" onClick={() => window.location.href = '/agents'}>
+              <Button
+                variant="outline"
+                onClick={() => (window.location.href = "/agents")}
+              >
                 Setup Agents
               </Button>
             </div>
           </CardContent>
         </Card>
       )}
-      
+
       {/* Score Breakdown Modal */}
       <ScoreBreakdownModal
         isOpen={showScoreModal}
         onClose={() => setShowScoreModal(false)}
-        leadName={selectedLead?.name || ''}
-        scoreBreakdown={selectedLead?.scoreBreakdown ? JSON.parse(selectedLead.scoreBreakdown) : null}
+        leadName={selectedLead?.name || ""}
+        scoreBreakdown={
+          selectedLead?.scoreBreakdown
+            ? JSON.parse(selectedLead.scoreBreakdown)
+            : null
+        }
       />
     </div>
   );

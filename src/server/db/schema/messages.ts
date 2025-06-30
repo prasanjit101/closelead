@@ -1,4 +1,4 @@
-import { sqliteTable, text, integer, primaryKey } from "drizzle-orm/sqlite-core";
+import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
 import { user } from "./user";
 import { leads } from "./leads";
 import {
@@ -7,7 +7,6 @@ import {
   createInsertSchema,
 } from "drizzle-zod";
 import { z } from "zod";
-
 
 export const messages = sqliteTable("messages", {
   id: text("id").primaryKey(),

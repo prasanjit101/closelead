@@ -7,24 +7,30 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
-import { 
-  Edit, 
-  Trash2, 
-  Save, 
+import {
+  Edit,
+  Trash2,
+  Save,
   X,
   Bot,
   Webhook,
   MessageSquare,
   UserCheck,
   PlusCircle, // Added for adding links
-  Link as LinkIcon // Renamed to avoid conflict with HTML Link
+  Link as LinkIcon, // Renamed to avoid conflict with HTML Link
 } from "lucide-react";
 import { toast } from "sonner";
 import { trpc } from "@/trpc/react";
-import type { AgentWithWebhooks, AgentLink } from "@/server/db/schema/agent";
+import type { AgentWithWebhooks } from "@/server/db/schema/agent";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -48,8 +54,10 @@ const agentTypeLabels = {
 };
 
 const agentTypeColors = {
-  response_agent: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
-  followup_agent: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
+  response_agent:
+    "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
+  followup_agent:
+    "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
 };
 
 const agentTypeIcons = {
@@ -64,7 +72,7 @@ export function AgentCard({ agent, onUpdate }: AgentCardProps) {
     description: agent.description || "",
     systemPrompt: agent.systemPrompt,
     type: agent.type as "response_agent" | "followup_agent",
-    webhookIds: agent.webhooks.map(w => w.id),
+    webhookIds: agent.webhooks.map((w) => w.id),
     isActive: agent.isActive || false,
     links: agent.links || [], // Initialize links
   });
@@ -115,7 +123,7 @@ export function AgentCard({ agent, onUpdate }: AgentCardProps) {
       description: agent.description || "",
       systemPrompt: agent.systemPrompt,
       type: agent.type as "response_agent" | "followup_agent",
-      webhookIds: agent.webhooks.map(w => w.id),
+      webhookIds: agent.webhooks.map((w) => w.id),
       isActive: agent.isActive || false,
       links: agent.links || [], // Reset links on cancel
     });
@@ -129,7 +137,7 @@ export function AgentCard({ agent, onUpdate }: AgentCardProps) {
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-primary/10">
+            <div className="bg-primary/10 rounded-lg p-2">
               <Bot className="h-5 w-5 text-primary" />
             </div>
             {isEditing ? (
@@ -140,23 +148,33 @@ export function AgentCard({ agent, onUpdate }: AgentCardProps) {
                 <Input
                   id="agent-name"
                   value={editData.name}
-                  onChange={(e) => setEditData(prev => ({ ...prev, name: e.target.value }))}
+                  onChange={(e) =>
+                    setEditData((prev) => ({ ...prev, name: e.target.value }))
+                  }
                   className="mt-1"
                   placeholder="Enter agent name"
                 />
               </div>
             ) : (
               <div>
-                <CardTitle className="text-lg flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-lg">
                   {agent.name}
                   <TypeIcon className="h-4 w-4 text-muted-foreground" />
                 </CardTitle>
-                <div className="flex items-center gap-2 mt-1">
-                  <Badge 
-                    variant="secondary" 
-                    className={agentTypeColors[agent.type as keyof typeof agentTypeColors]}
+                <div className="mt-1 flex items-center gap-2">
+                  <Badge
+                    variant="secondary"
+                    className={
+                      agentTypeColors[
+                        agent.type as keyof typeof agentTypeColors
+                      ]
+                    }
                   >
-                    {agentTypeLabels[agent.type as keyof typeof agentTypeLabels]}
+                    {
+                      agentTypeLabels[
+                        agent.type as keyof typeof agentTypeLabels
+                      ]
+                    }
                   </Badge>
                   <Badge variant={agent.isActive ? "default" : "secondary"}>
                     {agent.isActive ? "Active" : "Inactive"}
@@ -165,7 +183,7 @@ export function AgentCard({ agent, onUpdate }: AgentCardProps) {
               </div>
             )}
           </div>
-          
+
           <div className="flex items-center gap-2">
             {isEditing ? (
               <>
@@ -175,7 +193,7 @@ export function AgentCard({ agent, onUpdate }: AgentCardProps) {
                   disabled={updateMutation.isPending}
                   className="h-8"
                 >
-                  <Save className="h-4 w-4 mr-1" />
+                  <Save className="mr-1 h-4 w-4" />
                   Save
                 </Button>
                 <Button
@@ -184,7 +202,7 @@ export function AgentCard({ agent, onUpdate }: AgentCardProps) {
                   onClick={handleCancel}
                   className="h-8"
                 >
-                  <X className="h-4 w-4 mr-1" />
+                  <X className="mr-1 h-4 w-4" />
                   Cancel
                 </Button>
               </>
@@ -196,17 +214,13 @@ export function AgentCard({ agent, onUpdate }: AgentCardProps) {
                   onClick={() => setIsEditing(true)}
                   className="h-8"
                 >
-                  <Edit className="h-4 w-4 mr-1" />
+                  <Edit className="mr-1 h-4 w-4" />
                   Edit
                 </Button>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      className="h-8"
-                    >
-                      <Trash2 className="h-4 w-4 mr-1" />
+                    <Button size="sm" variant="destructive" className="h-8">
+                      <Trash2 className="mr-1 h-4 w-4" />
                       Delete
                     </Button>
                   </AlertDialogTrigger>
@@ -214,14 +228,15 @@ export function AgentCard({ agent, onUpdate }: AgentCardProps) {
                     <AlertDialogHeader>
                       <AlertDialogTitle>Delete Agent</AlertDialogTitle>
                       <AlertDialogDescription>
-                        Are you sure you want to delete "{agent.name}"? This action cannot be undone.
+                        Are you sure you want to delete "{agent.name}"? This
+                        action cannot be undone.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
                       <AlertDialogAction
                         onClick={handleDelete}
-                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        className="hover:bg-destructive/90 bg-destructive text-destructive-foreground"
                       >
                         Delete
                       </AlertDialogAction>
@@ -241,13 +256,18 @@ export function AgentCard({ agent, onUpdate }: AgentCardProps) {
           {isEditing ? (
             <Textarea
               value={editData.description}
-              onChange={(e) => setEditData(prev => ({ ...prev, description: e.target.value }))}
+              onChange={(e) =>
+                setEditData((prev) => ({
+                  ...prev,
+                  description: e.target.value,
+                }))
+              }
               className="mt-1"
               placeholder="Enter agent description"
               rows={2}
             />
           ) : (
-            <p className="text-sm text-muted-foreground mt-1">
+            <p className="mt-1 text-sm text-muted-foreground">
               {agent.description || "No description provided"}
             </p>
           )}
@@ -255,24 +275,30 @@ export function AgentCard({ agent, onUpdate }: AgentCardProps) {
 
         {isEditing && (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div>
                 <Label htmlFor="agent-type" className="text-sm font-medium">
                   Agent Type
                 </Label>
                 <Select
                   value={editData.type}
-                  onValueChange={(value) => setEditData(prev => ({ 
-                    ...prev, 
-                    type: value as "response_agent" | "followup_agent"
-                  }))}
+                  onValueChange={(value) =>
+                    setEditData((prev) => ({
+                      ...prev,
+                      type: value as "response_agent" | "followup_agent",
+                    }))
+                  }
                 >
                   <SelectTrigger className="mt-1">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="response_agent">Response Agent</SelectItem>
-                    <SelectItem value="followup_agent">Follow-up Agent</SelectItem>
+                    <SelectItem value="response_agent">
+                      Response Agent
+                    </SelectItem>
+                    <SelectItem value="followup_agent">
+                      Follow-up Agent
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -281,7 +307,9 @@ export function AgentCard({ agent, onUpdate }: AgentCardProps) {
                 <Switch
                   id="is-active"
                   checked={editData.isActive}
-                  onCheckedChange={(checked) => setEditData(prev => ({ ...prev, isActive: checked }))}
+                  onCheckedChange={(checked) =>
+                    setEditData((prev) => ({ ...prev, isActive: checked }))
+                  }
                 />
                 <Label htmlFor="is-active" className="text-sm font-medium">
                   Active
@@ -300,20 +328,25 @@ export function AgentCard({ agent, onUpdate }: AgentCardProps) {
                       checked={editData.webhookIds.includes(webhook.id)}
                       onChange={(e) => {
                         if (e.target.checked) {
-                          setEditData(prev => ({
+                          setEditData((prev) => ({
                             ...prev,
-                            webhookIds: [...prev.webhookIds, webhook.id]
+                            webhookIds: [...prev.webhookIds, webhook.id],
                           }));
                         } else {
-                          setEditData(prev => ({
+                          setEditData((prev) => ({
                             ...prev,
-                            webhookIds: prev.webhookIds.filter(id => id !== webhook.id)
+                            webhookIds: prev.webhookIds.filter(
+                              (id) => id !== webhook.id,
+                            ),
                           }));
                         }
                       }}
                       className="rounded border-gray-300"
                     />
-                    <Label htmlFor={`webhook-${webhook.id}`} className="text-sm">
+                    <Label
+                      htmlFor={`webhook-${webhook.id}`}
+                      className="text-sm"
+                    >
                       {webhook.name} ({webhook.formType})
                     </Label>
                   </div>
@@ -324,25 +357,31 @@ export function AgentCard({ agent, onUpdate }: AgentCardProps) {
 
             {/* Links - Editing Mode */}
             <div>
-              <Label className="text-sm font-medium flex items-center gap-2 mb-2">
+              <Label className="mb-2 flex items-center gap-2 text-sm font-medium">
                 <LinkIcon className="h-4 w-4" />
                 Links
               </Label>
               <div className="space-y-3">
                 {editData.links.length > 0 ? (
                   editData.links.map((link, index) => (
-                    <div key={index} className="flex flex-col gap-2 p-3 border rounded-md">
+                    <div
+                      key={index}
+                      className="flex flex-col gap-2 rounded-md border p-3"
+                    >
                       <div className="flex items-center justify-between">
-                        <Label htmlFor={`link-name-${index}`} className="text-sm font-medium">
+                        <Label
+                          htmlFor={`link-name-${index}`}
+                          className="text-sm font-medium"
+                        >
                           Link {index + 1}
                         </Label>
                         <Button
                           variant="destructive"
                           size="sm"
                           onClick={() => {
-                            setEditData(prev => ({
+                            setEditData((prev) => ({
                               ...prev,
-                              links: prev.links.filter((_, i) => i !== index)
+                              links: prev.links.filter((_, i) => i !== index),
                             }));
                           }}
                         >
@@ -350,16 +389,23 @@ export function AgentCard({ agent, onUpdate }: AgentCardProps) {
                         </Button>
                       </div>
                       <div>
-                        <Label htmlFor={`link-name-${index}`} className="text-xs">Name</Label>
+                        <Label
+                          htmlFor={`link-name-${index}`}
+                          className="text-xs"
+                        >
+                          Name
+                        </Label>
                         <Input
                           id={`link-name-${index}`}
                           value={link.name}
                           onChange={(e) => {
-                            setEditData(prev => ({
+                            setEditData((prev) => ({
                               ...prev,
                               links: prev.links.map((l, i) =>
-                                i === index ? { ...l, name: e.target.value } : l
-                              )
+                                i === index
+                                  ? { ...l, name: e.target.value }
+                                  : l,
+                              ),
                             }));
                           }}
                           className="mt-1 text-sm"
@@ -367,16 +413,21 @@ export function AgentCard({ agent, onUpdate }: AgentCardProps) {
                         />
                       </div>
                       <div>
-                        <Label htmlFor={`link-url-${index}`} className="text-xs">URL</Label>
+                        <Label
+                          htmlFor={`link-url-${index}`}
+                          className="text-xs"
+                        >
+                          URL
+                        </Label>
                         <Input
                           id={`link-url-${index}`}
                           value={link.url}
                           onChange={(e) => {
-                            setEditData(prev => ({
+                            setEditData((prev) => ({
                               ...prev,
                               links: prev.links.map((l, i) =>
-                                i === index ? { ...l, url: e.target.value } : l
-                              )
+                                i === index ? { ...l, url: e.target.value } : l,
+                              ),
                             }));
                           }}
                           className="mt-1 text-sm"
@@ -384,16 +435,23 @@ export function AgentCard({ agent, onUpdate }: AgentCardProps) {
                         />
                       </div>
                       <div>
-                        <Label htmlFor={`link-description-${index}`} className="text-xs">Description (Optional)</Label>
+                        <Label
+                          htmlFor={`link-description-${index}`}
+                          className="text-xs"
+                        >
+                          Description (Optional)
+                        </Label>
                         <Textarea
                           id={`link-description-${index}`}
                           value={link.description || ""}
                           onChange={(e) => {
-                            setEditData(prev => ({
+                            setEditData((prev) => ({
                               ...prev,
                               links: prev.links.map((l, i) =>
-                                i === index ? { ...l, description: e.target.value } : l
-                              )
+                                i === index
+                                  ? { ...l, description: e.target.value }
+                                  : l,
+                              ),
                             }));
                           }}
                           className="mt-1 text-sm"
@@ -404,20 +462,25 @@ export function AgentCard({ agent, onUpdate }: AgentCardProps) {
                     </div>
                   ))
                 ) : (
-                  <p className="text-sm text-muted-foreground">No links added yet.</p>
+                  <p className="text-sm text-muted-foreground">
+                    No links added yet.
+                  </p>
                 )}
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => {
-                    setEditData(prev => ({
+                    setEditData((prev) => ({
                       ...prev,
-                      links: [...prev.links, { name: "", url: "", description: "" }]
+                      links: [
+                        ...prev.links,
+                        { name: "", url: "", description: "" },
+                      ],
                     }));
                   }}
                   className="w-full"
                 >
-                  <PlusCircle className="h-4 w-4 mr-2" />
+                  <PlusCircle className="mr-2 h-4 w-4" />
                   Add Link
                 </Button>
               </div>
@@ -429,11 +492,11 @@ export function AgentCard({ agent, onUpdate }: AgentCardProps) {
         {/* Trigger Webhooks - Display Mode */}
         {!isEditing && (
           <div>
-            <Label className="text-sm font-medium flex items-center gap-2">
+            <Label className="flex items-center gap-2 text-sm font-medium">
               <Webhook className="h-4 w-4" />
               Trigger Webhooks
             </Label>
-            <div className="flex flex-wrap gap-2 mt-2">
+            <div className="mt-2 flex flex-wrap gap-2">
               {agent.webhooks.length > 0 ? (
                 agent.webhooks.map((webhook) => (
                   <Badge key={webhook.id} variant="outline" className="text-xs">
@@ -441,7 +504,9 @@ export function AgentCard({ agent, onUpdate }: AgentCardProps) {
                   </Badge>
                 ))
               ) : (
-                <span className="text-sm text-muted-foreground">No webhooks configured</span>
+                <span className="text-sm text-muted-foreground">
+                  No webhooks configured
+                </span>
               )}
             </div>
           </div>
@@ -459,7 +524,7 @@ export function AgentCard({ agent, onUpdate }: AgentCardProps) {
                       href={link.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline text-sm"
+                      className="text-sm text-blue-600 hover:underline"
                     >
                       {link.name}
                     </a>
@@ -471,7 +536,9 @@ export function AgentCard({ agent, onUpdate }: AgentCardProps) {
                   </div>
                 ))
               ) : (
-                <span className="text-sm text-muted-foreground">No links provided</span>
+                <span className="text-sm text-muted-foreground">
+                  No links provided
+                </span>
               )}
             </div>
           </div>
@@ -483,14 +550,19 @@ export function AgentCard({ agent, onUpdate }: AgentCardProps) {
           {isEditing ? (
             <Textarea
               value={editData.systemPrompt}
-              onChange={(e) => setEditData(prev => ({ ...prev, systemPrompt: e.target.value }))}
+              onChange={(e) =>
+                setEditData((prev) => ({
+                  ...prev,
+                  systemPrompt: e.target.value,
+                }))
+              }
               className="mt-1 font-mono text-sm"
               placeholder="Enter system prompt"
               rows={4}
             />
           ) : (
-            <div className="mt-1 p-3 bg-muted rounded-md">
-              <p className="text-sm font-mono whitespace-pre-wrap">
+            <div className="mt-1 rounded-md bg-muted p-3">
+              <p className="whitespace-pre-wrap font-mono text-sm">
                 {agent.systemPrompt}
               </p>
             </div>
@@ -498,9 +570,11 @@ export function AgentCard({ agent, onUpdate }: AgentCardProps) {
         </div>
 
         {/* Metadata */}
-        <div className="text-xs text-muted-foreground pt-2 border-t">
+        <div className="border-t pt-2 text-xs text-muted-foreground">
           <div className="flex justify-between">
-            <span>Created: {new Date(agent.createdAt).toLocaleDateString()}</span>
+            <span>
+              Created: {new Date(agent.createdAt).toLocaleDateString()}
+            </span>
             <span>ID: {agent.id}</span>
           </div>
         </div>

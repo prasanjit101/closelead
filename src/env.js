@@ -30,7 +30,6 @@ export const env = createEnv({
    */
   client: {
     NEXT_PUBLIC_APP_URL: z.string(),
-    NEXT_PUBLIC_COMPOSIO_API_KEY: z.string(),
   },
 
   /**
@@ -51,7 +50,6 @@ export const env = createEnv({
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
     COMPOSIO_API_KEY: process.env.COMPOSIO_API_KEY,
-    NEXT_PUBLIC_COMPOSIO_API_KEY: process.env.NEXT_PUBLIC_COMPOSIO_API_KEY,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

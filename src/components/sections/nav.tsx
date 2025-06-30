@@ -1,11 +1,10 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ChevronDown } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { Logo } from "../block/Logo";
 import { signInGoogle } from "@/lib/auth-client";
-import { env } from "@/env";
 
 export const LandingNav = () => {
   return (
@@ -20,10 +19,12 @@ export const LandingNav = () => {
             <Button
               onClick={() =>
                 signInGoogle({
-                  callbackURL: '/dashboard',
+                  callbackURL: "/dashboard",
                 })
               }
-              variant="ghost" className="flex items-center gap-1 text-sm font-semibold">
+              variant="ghost"
+              className="flex items-center gap-1 text-sm font-semibold"
+            >
               Log In <ArrowRight className="h-4 w-4" />
             </Button>
           </div>

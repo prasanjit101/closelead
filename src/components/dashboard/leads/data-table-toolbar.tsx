@@ -1,16 +1,16 @@
-"use client"
+"use client";
 
-import { Cross2Icon } from "@radix-ui/react-icons"
-import { Table } from "@tanstack/react-table"
+import { CrossIcon } from "lucide-react";
+import { Table } from "@tanstack/react-table";
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { DataTableViewOptions } from "./data-table-view-options"
-import { DataTableFacetedFilter } from "./data-table-faceted-filter"
-import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { DataTableViewOptions } from "./data-table-view-options";
+import { DataTableFacetedFilter } from "./data-table-faceted-filter";
+import { Badge } from "@/components/ui/badge";
 
 interface DataTableToolbarProps<TData> {
-  table: Table<TData>
+  table: Table<TData>;
 }
 
 const statuses = [
@@ -38,7 +38,7 @@ const statuses = [
     value: "closed",
     label: "Closed",
   },
-]
+];
 
 const scores = [
   {
@@ -53,12 +53,12 @@ const scores = [
     value: "low",
     label: "Low (1-5)",
   },
-]
+];
 
 export function DataTableToolbar<TData>({
   table,
 }: DataTableToolbarProps<TData>) {
-  const isFiltered = table.getState().columnFilters.length > 0
+  const isFiltered = table.getState().columnFilters.length > 0;
 
   return (
     <div className="flex items-center justify-between">
@@ -85,7 +85,7 @@ export function DataTableToolbar<TData>({
             className="h-8 px-2 lg:px-3"
           >
             Reset
-            <Cross2Icon className="ml-2 h-4 w-4" />
+            <CrossIcon className="ml-2 h-4 w-4" />
           </Button>
         )}
       </div>
@@ -103,5 +103,5 @@ export function DataTableToolbar<TData>({
         <DataTableViewOptions table={table} />
       </div>
     </div>
-  )
+  );
 }

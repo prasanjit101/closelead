@@ -22,15 +22,15 @@ export function UserProfileDropdown({ session }: UserProfileDropdownProps) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <div className="flex items-center gap-2">
-        <Avatar className="cursor-pointer">
-          <AvatarImage
-            src={session?.user?.image ?? ""}
-            alt={session?.user?.name}
-          />
-          <AvatarFallback className="border bg-secondary text-lg text-secondary-foreground">
-            {getInitials(session?.user?.name)}
-          </AvatarFallback>
-        </Avatar>
+          <Avatar className="cursor-pointer">
+            <AvatarImage
+              src={session?.user?.image ?? ""}
+              alt={session?.user?.name}
+            />
+            <AvatarFallback className="border bg-secondary text-lg text-secondary-foreground">
+              {getInitials(session?.user?.name)}
+            </AvatarFallback>
+          </Avatar>
           <ChevronDown
             className="relative top-[1px] ml-1 h-3 w-3 transition duration-300 group-data-[state=open]:rotate-180"
             aria-hidden="true"

@@ -6,11 +6,11 @@ import { eq } from "drizzle-orm";
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { webhookId: string } }
+  { params }: { params: { webhookId: string } },
 ) {
   try {
     const webhookId = params.webhookId;
-    
+
     // Verify webhook exists and is active
     const webhook = await db
       .select()
@@ -19,28 +19,25 @@ export async function POST(
       .get();
 
     if (!webhook) {
-      return NextResponse.json(
-        { error: "Webhook not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Webhook not found" }, { status: 404 });
     }
 
     if (!webhook.isActive) {
       return NextResponse.json(
         { error: "Webhook is inactive" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
     // Parse request body
     const body = await request.json();
-    
+
     // Verify webhook secret if provided
     const providedSecret = request.headers.get("x-webhook-secret");
     if (webhook.webhookSecret && providedSecret !== webhook.webhookSecret) {
       return NextResponse.json(
         { error: "Invalid webhook secret" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -54,16 +51,15 @@ export async function POST(
       triggeredAgents: result.triggeredAgents.length,
       message: `Lead processed successfully with score ${result.score}/10`,
     });
-
   } catch (error) {
     console.error("Webhook processing error:", error);
-    
+
     return NextResponse.json(
-      { 
+      {
         error: "Internal server error",
-        message: error instanceof Error ? error.message : "Unknown error"
+        message: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -71,11 +67,11 @@ export async function POST(
 // Handle GET requests for webhook verification
 export async function GET(
   request: NextRequest,
-  { params }: { params: { webhookId: string } }
+  { params }: { params: { webhookId: string } },
 ) {
   try {
     const webhookId = params.webhookId;
-    
+
     // Verify webhook exists
     const webhook = await db
       .select({
@@ -89,10 +85,7 @@ export async function GET(
       .get();
 
     if (!webhook) {
-      return NextResponse.json(
-        { error: "Webhook not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Webhook not found" }, { status: 404 });
     }
 
     return NextResponse.json({
@@ -105,13 +98,12 @@ export async function GET(
       },
       message: "Webhook is ready to receive data",
     });
-
   } catch (error) {
     console.error("Webhook verification error:", error);
-    
+
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

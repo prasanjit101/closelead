@@ -33,11 +33,11 @@ export function Navbar({ session }: { session: Session }) {
         {navItems.map((item) => (
           <Link key={item.href} href={item.href}>
             <Button
-              variant={pathname === item.href ? "default" : "ghost"}
+              variant={"ghost"}
               size="sm"
               className={cn(
                 "h-8",
-                pathname === item.href && "bg-primary text-primary-foreground"
+                pathname === item.href ? " text-primary" : "text-foreground",
               )}
             >
               {item.label}

@@ -15,9 +15,22 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea"; // Import Textarea
 import { Plus, Loader2, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
@@ -41,13 +54,13 @@ interface AddWebhookDialogProps {
 // Helper function to generate webhook secret
 function generateWebhookSecret(): string {
   return Array.from(crypto.getRandomValues(new Uint8Array(16)))
-    .map(b => b.toString(16).padStart(2, '0'))
-    .join('');
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
 }
 
 export function AddWebhookDialog({ onWebhookAdded }: AddWebhookDialogProps) {
   const [open, setOpen] = useState(false);
-  
+
   const form = useForm<WebhookFormData>({
     resolver: zodResolver(webhookFormSchema),
     defaultValues: {
@@ -97,7 +110,8 @@ export function AddWebhookDialog({ onWebhookAdded }: AddWebhookDialogProps) {
         <DialogHeader>
           <DialogTitle>Create New Webhook</DialogTitle>
           <DialogDescription>
-            Create a new webhook to receive form submissions. A unique URL will be generated for this webhook.
+            Create a new webhook to receive form submissions. A unique URL will
+            be generated for this webhook.
           </DialogDescription>
         </DialogHeader>
 
@@ -110,7 +124,10 @@ export function AddWebhookDialog({ onWebhookAdded }: AddWebhookDialogProps) {
                 <FormItem>
                   <FormLabel>Webhook Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., Contact Form Webhook" {...field} />
+                    <Input
+                      placeholder="e.g., Contact Form Webhook"
+                      {...field}
+                    />
                   </FormControl>
                   <FormDescription>
                     Give your webhook a descriptive name to identify it later.
@@ -126,7 +143,10 @@ export function AddWebhookDialog({ onWebhookAdded }: AddWebhookDialogProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Form Type</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select the type of form" />
@@ -172,7 +192,8 @@ export function AddWebhookDialog({ onWebhookAdded }: AddWebhookDialogProps) {
                     </Button>
                   </div>
                   <FormDescription>
-                    This secret will be used to verify webhook authenticity. You can generate a new one or use your own.
+                    This secret will be used to verify webhook authenticity. You
+                    can generate a new one or use your own.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -192,7 +213,8 @@ export function AddWebhookDialog({ onWebhookAdded }: AddWebhookDialogProps) {
                     />
                   </FormControl>
                   <FormDescription>
-                    Provide a prompt that will be used to score leads from this webhook.
+                    Provide a prompt that will be used to score leads from this
+                    webhook.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -207,10 +229,7 @@ export function AddWebhookDialog({ onWebhookAdded }: AddWebhookDialogProps) {
               >
                 Cancel
               </Button>
-              <Button
-                type="submit"
-                disabled={createWebhookMutation.isPending}
-              >
+              <Button type="submit" disabled={createWebhookMutation.isPending}>
                 {createWebhookMutation.isPending ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />

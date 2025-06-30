@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import { Lead } from '@/server/db/schema';
+import { create } from "zustand";
+import { Lead } from "@/server/db/schema";
 
 type State = {
   leads: Lead[];

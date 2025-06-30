@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
 import { trpc } from "@/trpc/react";
 import { WebhookCard } from "./WebhookCard";
 import { AddWebhookDialog } from "./AddWebhookDialog";
@@ -9,11 +8,11 @@ import { Loader2, Webhook, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export function WebhooksList() {
-  const { 
-    data: webhooks, 
-    isLoading, 
-    error, 
-    refetch 
+  const {
+    data: webhooks,
+    isLoading,
+    error,
+    refetch,
   } = trpc.webhook.getUserWebhooks.useQuery();
 
   const handleWebhookUpdate = () => {
@@ -44,13 +43,14 @@ export function WebhooksList() {
 
   if (!webhooks || webhooks.length === 0) {
     return (
-      <div className="text-center py-12">
-        <div className="mx-auto w-24 h-24 bg-muted rounded-full flex items-center justify-center mb-4">
+      <div className="py-12 text-center">
+        <div className="mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-muted">
           <Webhook className="h-12 w-12 text-muted-foreground" />
         </div>
-        <h3 className="text-lg font-semibold mb-2">No webhooks yet</h3>
-        <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-          Create your first webhook to start receiving form submissions and managing leads automatically.
+        <h3 className="mb-2 text-lg font-semibold">No webhooks yet</h3>
+        <p className="mx-auto mb-6 max-w-md text-muted-foreground">
+          Create your first webhook to start receiving form submissions and
+          managing leads automatically.
         </p>
         <AddWebhookDialog onWebhookAdded={handleWebhookUpdate} />
       </div>
@@ -83,7 +83,7 @@ export function WebhooksList() {
         <Card className="border-dashed">
           <CardContent className="flex items-center justify-center py-8">
             <div className="text-center">
-              <p className="text-sm text-muted-foreground mb-4">
+              <p className="mb-4 text-sm text-muted-foreground">
                 Need another webhook endpoint?
               </p>
               <AddWebhookDialog onWebhookAdded={handleWebhookUpdate} />

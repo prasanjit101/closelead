@@ -1,4 +1,4 @@
-import { sqliteTable, text, integer, primaryKey } from "drizzle-orm/sqlite-core";
+import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
 import { user } from "./user";
 import { webhooks } from "./webhook";
 import {
@@ -19,7 +19,7 @@ export const leads = sqliteTable("leads", {
   rawData: text("raw_data"), // JSON field for form submission
   score: integer("score"), // 1-10 AI generated score
   scoreBreakdown: text("score_breakdown"), // JSON field for score breakdown
-  status: text("status").default('new'), // 'new' | 'contacted' | 'followed_up' | 'replied' | 'meeting_booked' | 'closed'
+  status: text("status").default("new"), // 'new' | 'contacted' | 'followed_up' | 'replied' | 'meeting_booked' | 'closed'
   createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
   updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
 });

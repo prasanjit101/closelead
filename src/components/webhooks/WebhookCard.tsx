@@ -6,21 +6,27 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea"; // Import Textarea
-import { 
-  Edit, 
-  Trash2, 
-  Copy, 
-  Eye, 
-  EyeOff, 
-  RefreshCw, 
-  Save, 
+import {
+  Edit,
+  Trash2,
+  Copy,
+  Eye,
+  EyeOff,
+  RefreshCw,
+  Save,
   X,
   ExternalLink,
-  Globe
+  Globe,
 } from "lucide-react";
 import { toast } from "sonner";
 import { trpc } from "@/trpc/react";
@@ -50,7 +56,8 @@ const formTypeLabels = {
 };
 
 const formTypeColors = {
-  typeform: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
+  typeform:
+    "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
   google_forms: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
   custom: "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200",
   tally: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
@@ -61,7 +68,11 @@ export function WebhookCard({ webhook, onUpdate }: WebhookCardProps) {
   const [showSecret, setShowSecret] = useState(false);
   const [editData, setEditData] = useState({
     name: webhook.name,
-    formType: webhook.formType as "typeform" | "google_forms" | "custom" | "tally",
+    formType: webhook.formType as
+      | "typeform"
+      | "google_forms"
+      | "custom"
+      | "tally",
     webhookSecret: webhook.webhookSecret || "",
     scoringPrompt: webhook.scoringPrompt || "", // Add scoringPrompt
     isActive: webhook.isActive || false,
@@ -91,7 +102,10 @@ export function WebhookCard({ webhook, onUpdate }: WebhookCardProps) {
   const regenerateSecretMutation = trpc.webhook.regenerateSecret.useMutation({
     onSuccess: (updatedWebhook) => {
       toast.success("Webhook secret regenerated successfully");
-      setEditData(prev => ({ ...prev, webhookSecret: updatedWebhook.webhookSecret || "" }));
+      setEditData((prev) => ({
+        ...prev,
+        webhookSecret: updatedWebhook.webhookSecret || "",
+      }));
       onUpdate();
     },
     onError: (error) => {
@@ -126,7 +140,11 @@ export function WebhookCard({ webhook, onUpdate }: WebhookCardProps) {
   const handleCancel = () => {
     setEditData({
       name: webhook.name,
-      formType: webhook.formType as "typeform" | "google_forms" | "custom" | "tally",
+      formType: webhook.formType as
+        | "typeform"
+        | "google_forms"
+        | "custom"
+        | "tally",
       webhookSecret: webhook.webhookSecret || "",
       scoringPrompt: webhook.scoringPrompt || "", // Reset scoringPrompt
       isActive: webhook.isActive || false,
@@ -147,7 +165,9 @@ export function WebhookCard({ webhook, onUpdate }: WebhookCardProps) {
                 <Input
                   id="webhook-name"
                   value={editData.name}
-                  onChange={(e) => setEditData(prev => ({ ...prev, name: e.target.value }))}
+                  onChange={(e) =>
+                    setEditData((prev) => ({ ...prev, name: e.target.value }))
+                  }
                   className="mt-1"
                   placeholder="Enter webhook name"
                 />
@@ -155,12 +175,20 @@ export function WebhookCard({ webhook, onUpdate }: WebhookCardProps) {
             ) : (
               <div>
                 <CardTitle className="text-lg">{webhook.name}</CardTitle>
-                <div className="flex items-center gap-2 mt-1">
-                  <Badge 
-                    variant="secondary" 
-                    className={formTypeColors[webhook.formType as keyof typeof formTypeColors]}
+                <div className="mt-1 flex items-center gap-2">
+                  <Badge
+                    variant="secondary"
+                    className={
+                      formTypeColors[
+                        webhook.formType as keyof typeof formTypeColors
+                      ]
+                    }
                   >
-                    {formTypeLabels[webhook.formType as keyof typeof formTypeLabels]}
+                    {
+                      formTypeLabels[
+                        webhook.formType as keyof typeof formTypeLabels
+                      ]
+                    }
                   </Badge>
                   <Badge variant={webhook.isActive ? "default" : "secondary"}>
                     {webhook.isActive ? "Active" : "Inactive"}
@@ -169,7 +197,7 @@ export function WebhookCard({ webhook, onUpdate }: WebhookCardProps) {
               </div>
             )}
           </div>
-          
+
           <div className="flex items-center gap-2">
             {isEditing ? (
               <>
@@ -179,7 +207,7 @@ export function WebhookCard({ webhook, onUpdate }: WebhookCardProps) {
                   disabled={updateMutation.isPending}
                   className="h-8"
                 >
-                  <Save className="h-4 w-4 mr-1" />
+                  <Save className="mr-1 h-4 w-4" />
                   Save
                 </Button>
                 <Button
@@ -188,7 +216,7 @@ export function WebhookCard({ webhook, onUpdate }: WebhookCardProps) {
                   onClick={handleCancel}
                   className="h-8"
                 >
-                  <X className="h-4 w-4 mr-1" />
+                  <X className="mr-1 h-4 w-4" />
                   Cancel
                 </Button>
               </>
@@ -200,17 +228,13 @@ export function WebhookCard({ webhook, onUpdate }: WebhookCardProps) {
                   onClick={() => setIsEditing(true)}
                   className="h-8"
                 >
-                  <Edit className="h-4 w-4 mr-1" />
+                  <Edit className="mr-1 h-4 w-4" />
                   Edit
                 </Button>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      className="h-8"
-                    >
-                      <Trash2 className="h-4 w-4 mr-1" />
+                    <Button size="sm" variant="destructive" className="h-8">
+                      <Trash2 className="mr-1 h-4 w-4" />
                       Delete
                     </Button>
                   </AlertDialogTrigger>
@@ -218,14 +242,15 @@ export function WebhookCard({ webhook, onUpdate }: WebhookCardProps) {
                     <AlertDialogHeader>
                       <AlertDialogTitle>Delete Webhook</AlertDialogTitle>
                       <AlertDialogDescription>
-                        Are you sure you want to delete "{webhook.name}"? This action cannot be undone.
+                        Are you sure you want to delete "{webhook.name}"? This
+                        action cannot be undone.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
                       <AlertDialogAction
                         onClick={handleDelete}
-                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        className="hover:bg-destructive/90 bg-destructive text-destructive-foreground"
                       >
                         Delete
                       </AlertDialogAction>
@@ -241,17 +266,23 @@ export function WebhookCard({ webhook, onUpdate }: WebhookCardProps) {
       <CardContent className="space-y-4">
         {isEditing && (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div>
                 <Label htmlFor="form-type" className="text-sm font-medium">
                   Form Type
                 </Label>
                 <Select
                   value={editData.formType}
-                  onValueChange={(value) => setEditData(prev => ({ 
-                    ...prev, 
-                    formType: value as "typeform" | "google_forms" | "custom" | "tally"
-                  }))}
+                  onValueChange={(value) =>
+                    setEditData((prev) => ({
+                      ...prev,
+                      formType: value as
+                        | "typeform"
+                        | "google_forms"
+                        | "custom"
+                        | "tally",
+                    }))
+                  }
                 >
                   <SelectTrigger className="mt-1">
                     <SelectValue />
@@ -269,7 +300,9 @@ export function WebhookCard({ webhook, onUpdate }: WebhookCardProps) {
                 <Switch
                   id="is-active"
                   checked={editData.isActive}
-                  onCheckedChange={(checked) => setEditData(prev => ({ ...prev, isActive: checked }))}
+                  onCheckedChange={(checked) =>
+                    setEditData((prev) => ({ ...prev, isActive: checked }))
+                  }
                 />
                 <Label htmlFor="is-active" className="text-sm font-medium">
                   Active
@@ -284,7 +317,12 @@ export function WebhookCard({ webhook, onUpdate }: WebhookCardProps) {
               <Textarea
                 id="scoring-prompt"
                 value={editData.scoringPrompt}
-                onChange={(e) => setEditData(prev => ({ ...prev, scoringPrompt: e.target.value }))}
+                onChange={(e) =>
+                  setEditData((prev) => ({
+                    ...prev,
+                    scoringPrompt: e.target.value,
+                  }))
+                }
                 className="mt-1"
                 placeholder="Enter scoring prompt"
               />
@@ -295,8 +333,8 @@ export function WebhookCard({ webhook, onUpdate }: WebhookCardProps) {
 
         {/* Webhook URL */}
         <div>
-          <div className="flex items-center justify-between mb-2">
-            <Label className="text-sm font-medium flex items-center gap-2">
+          <div className="mb-2 flex items-center justify-between">
+            <Label className="flex items-center gap-2 text-sm font-medium">
               <Globe className="h-4 w-4" />
               Webhook URL
             </Label>
@@ -313,12 +351,12 @@ export function WebhookCard({ webhook, onUpdate }: WebhookCardProps) {
             <Input
               value={webhook.webhookUrl}
               readOnly
-              className="font-mono text-sm bg-muted"
+              className="bg-muted font-mono text-sm"
             />
             <Button
               size="sm"
               variant="outline"
-              onClick={() => window.open(webhook.webhookUrl, '_blank')}
+              onClick={() => window.open(webhook.webhookUrl, "_blank")}
               className="h-9 px-3"
             >
               <ExternalLink className="h-4 w-4" />
@@ -328,7 +366,7 @@ export function WebhookCard({ webhook, onUpdate }: WebhookCardProps) {
 
         {/* Webhook Secret */}
         <div>
-          <div className="flex items-center justify-between mb-2">
+          <div className="mb-2 flex items-center justify-between">
             <Label className="text-sm font-medium">Webhook Secret</Label>
             <div className="flex items-center gap-1">
               <Button
@@ -337,12 +375,18 @@ export function WebhookCard({ webhook, onUpdate }: WebhookCardProps) {
                 onClick={() => setShowSecret(!showSecret)}
                 className="h-6 px-2"
               >
-                {showSecret ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                {showSecret ? (
+                  <EyeOff className="h-3 w-3" />
+                ) : (
+                  <Eye className="h-3 w-3" />
+                )}
               </Button>
               <Button
                 size="sm"
                 variant="ghost"
-                onClick={() => copyToClipboard(webhook.webhookSecret || "", "Webhook Secret")}
+                onClick={() =>
+                  copyToClipboard(webhook.webhookSecret || "", "Webhook Secret")
+                }
                 className="h-6 px-2"
               >
                 <Copy className="h-3 w-3" />
@@ -355,7 +399,9 @@ export function WebhookCard({ webhook, onUpdate }: WebhookCardProps) {
                   disabled={regenerateSecretMutation.isPending}
                   className="h-6 px-2"
                 >
-                  <RefreshCw className={`h-3 w-3 ${regenerateSecretMutation.isPending ? 'animate-spin' : ''}`} />
+                  <RefreshCw
+                    className={`h-3 w-3 ${regenerateSecretMutation.isPending ? "animate-spin" : ""}`}
+                  />
                 </Button>
               )}
             </div>
@@ -363,24 +409,33 @@ export function WebhookCard({ webhook, onUpdate }: WebhookCardProps) {
           {isEditing ? (
             <Input
               value={editData.webhookSecret}
-              onChange={(e) => setEditData(prev => ({ ...prev, webhookSecret: e.target.value }))}
+              onChange={(e) =>
+                setEditData((prev) => ({
+                  ...prev,
+                  webhookSecret: e.target.value,
+                }))
+              }
               type={showSecret ? "text" : "password"}
               className="font-mono text-sm"
               placeholder="Enter webhook secret"
             />
           ) : (
             <Input
-                value={showSecret ? (webhook.webhookSecret || "") : "••••••••••••••••"}
+              value={
+                showSecret ? webhook.webhookSecret || "" : "••••••••••••••••"
+              }
               readOnly
-              className="font-mono text-sm bg-muted"
+              className="bg-muted font-mono text-sm"
             />
           )}
         </div>
 
         {/* Metadata */}
-        <div className="text-xs text-muted-foreground pt-2 border-t">
+        <div className="border-t pt-2 text-xs text-muted-foreground">
           <div className="flex justify-between">
-            <span>Created: {new Date(webhook.createdAt).toLocaleDateString()}</span>
+            <span>
+              Created: {new Date(webhook.createdAt).toLocaleDateString()}
+            </span>
             <span>ID: {webhook.id}</span>
           </div>
         </div>

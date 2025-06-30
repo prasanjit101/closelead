@@ -16,8 +16,22 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Plus, Loader2, Bot } from "lucide-react";
 import { toast } from "sonner";
@@ -29,7 +43,9 @@ const agentFormSchema = z.object({
   description: z.string().optional(),
   systemPrompt: z.string().min(1, "System prompt is required"),
   type: agentTypeSchema,
-  webhookIds: z.array(z.string()).min(1, "At least one webhook must be selected"),
+  webhookIds: z
+    .array(z.string())
+    .min(1, "At least one webhook must be selected"),
 });
 
 type AgentFormData = z.infer<typeof agentFormSchema>;
@@ -40,9 +56,9 @@ interface AddAgentDialogProps {
 
 export function AddAgentDialog({ onAgentAdded }: AddAgentDialogProps) {
   const [open, setOpen] = useState(false);
-  
+
   const { data: webhooks } = trpc.webhook.getUserWebhooks.useQuery();
-  
+
   const form = useForm<AgentFormData>({
     resolver: zodResolver(agentFormSchema),
     defaultValues: {
@@ -93,14 +109,15 @@ export function AddAgentDialog({ onAgentAdded }: AddAgentDialogProps) {
           Add Agent
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Bot className="h-5 w-5" />
             Create New Agent
           </DialogTitle>
           <DialogDescription>
-            Create a new AI agent to automate lead responses and follow-ups. Configure the agent's behavior and trigger webhooks.
+            Create a new AI agent to automate lead responses and follow-ups.
+            Configure the agent's behavior and trigger webhooks.
           </DialogDescription>
         </DialogHeader>
 
@@ -137,7 +154,8 @@ export function AddAgentDialog({ onAgentAdded }: AddAgentDialogProps) {
                     />
                   </FormControl>
                   <FormDescription>
-                    Provide a brief description of the agent's purpose and functionality.
+                    Provide a brief description of the agent's purpose and
+                    functionality.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -150,15 +168,22 @@ export function AddAgentDialog({ onAgentAdded }: AddAgentDialogProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Agent Type</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select agent type" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="response_agent">Response Agent</SelectItem>
-                      <SelectItem value="followup_agent">Follow-up Agent</SelectItem>
+                      <SelectItem value="response_agent">
+                        Response Agent
+                      </SelectItem>
+                      <SelectItem value="followup_agent">
+                        Follow-up Agent
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                   <FormDescription>
@@ -175,7 +200,9 @@ export function AddAgentDialog({ onAgentAdded }: AddAgentDialogProps) {
               render={() => (
                 <FormItem>
                   <div className="mb-4">
-                    <FormLabel className="text-base">Trigger Webhooks</FormLabel>
+                    <FormLabel className="text-base">
+                      Trigger Webhooks
+                    </FormLabel>
                     <FormDescription>
                       Select which webhooks should trigger this agent.
                     </FormDescription>
@@ -197,12 +224,15 @@ export function AddAgentDialog({ onAgentAdded }: AddAgentDialogProps) {
                                   checked={field.value?.includes(webhook.id)}
                                   onCheckedChange={(checked) => {
                                     return checked
-                                      ? field.onChange([...field.value, webhook.id])
+                                      ? field.onChange([
+                                          ...field.value,
+                                          webhook.id,
+                                        ])
                                       : field.onChange(
                                           field.value?.filter(
-                                            (value) => value !== webhook.id
-                                          )
-                                        )
+                                            (value) => value !== webhook.id,
+                                          ),
+                                        );
                                   }}
                                 />
                               </FormControl>
@@ -211,11 +241,12 @@ export function AddAgentDialog({ onAgentAdded }: AddAgentDialogProps) {
                                   {webhook.name}
                                 </FormLabel>
                                 <FormDescription className="text-xs">
-                                  {webhook.formType} • {webhook.isActive ? 'Active' : 'Inactive'}
+                                  {webhook.formType} •{" "}
+                                  {webhook.isActive ? "Active" : "Inactive"}
                                 </FormDescription>
                               </div>
                             </FormItem>
-                          )
+                          );
                         }}
                       />
                     ))}
@@ -255,10 +286,7 @@ export function AddAgentDialog({ onAgentAdded }: AddAgentDialogProps) {
               >
                 Cancel
               </Button>
-              <Button
-                type="submit"
-                disabled={createAgentMutation.isPending}
-              >
+              <Button type="submit" disabled={createAgentMutation.isPending}>
                 {createAgentMutation.isPending ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />

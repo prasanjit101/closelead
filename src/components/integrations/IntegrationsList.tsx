@@ -7,11 +7,11 @@ import { Loader2, Plug, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export function IntegrationsList() {
-  const { 
-    data: integrations, 
-    isLoading, 
-    error, 
-    refetch 
+  const {
+    data: integrations,
+    isLoading,
+    error,
+    refetch,
   } = trpc.integrations.getUserIntegrations.useQuery();
 
   const handleIntegrationUpdate = () => {
@@ -40,7 +40,7 @@ export function IntegrationsList() {
     );
   }
 
-  const gmailIntegration = integrations?.find(i => i.type === "gmail");
+  const gmailIntegration = integrations?.find((i) => i.type === "gmail");
 
   return (
     <div className="space-y-6">
@@ -48,7 +48,8 @@ export function IntegrationsList() {
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Integrations</h2>
           <p className="text-muted-foreground">
-            Connect your favorite tools to automate your lead management workflow.
+            Connect your favorite tools to automate your lead management
+            workflow.
           </p>
         </div>
       </div>
@@ -102,7 +103,7 @@ export function IntegrationsList() {
           ].map((integration) => (
             <Card key={integration.name} className="opacity-60">
               <CardContent className="p-6">
-                <div className="flex items-center gap-3 mb-3">
+                <div className="mb-3 flex items-center gap-3">
                   <div className="text-2xl">{integration.icon}</div>
                   <div>
                     <h3 className="font-semibold">{integration.name}</h3>
@@ -112,7 +113,7 @@ export function IntegrationsList() {
                   </div>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full dark:bg-yellow-900 dark:text-yellow-200">
+                  <span className="rounded-full bg-yellow-100 px-2 py-1 text-xs text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
                     Coming Soon
                   </span>
                 </div>
@@ -126,15 +127,17 @@ export function IntegrationsList() {
       <Card className="border-dashed">
         <CardContent className="flex items-center justify-center py-8">
           <div className="text-center">
-            <Plug className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Need a Custom Integration?</h3>
-            <p className="text-sm text-muted-foreground mb-4 max-w-md">
-              We're constantly adding new integrations. If you need a specific integration, 
-              let us know and we'll prioritize it.
+            <Plug className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+            <h3 className="mb-2 text-lg font-semibold">
+              Need a Custom Integration?
+            </h3>
+            <p className="mb-4 max-w-md text-sm text-muted-foreground">
+              We're constantly adding new integrations. If you need a specific
+              integration, let us know and we'll prioritize it.
             </p>
             <a
               href="mailto:support@closelead.com"
-              className="text-primary hover:underline text-sm font-medium"
+              className="text-sm font-medium text-primary hover:underline"
             >
               Request Integration
             </a>

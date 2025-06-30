@@ -1,4 +1,4 @@
-import { useLeadsStore } from '@/store/leads';
+import { useLeadsStore } from "@/store/leads";
 
 export const useLeads = () => {
   const leads = useLeadsStore((state) => state.leads);
@@ -7,7 +7,7 @@ export const useLeads = () => {
   const error = useLeadsStore((state) => state.error);
   const setLeads = useLeadsStore((state) => state.setLeads);
   const toggleLeadSelection = useLeadsStore(
-    (state) => state.toggleLeadSelection
+    (state) => state.toggleLeadSelection,
   );
   const setLoading = useLeadsStore((state) => state.setLoading);
   const setError = useLeadsStore((state) => state.setError);

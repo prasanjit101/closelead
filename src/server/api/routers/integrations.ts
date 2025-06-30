@@ -1,7 +1,10 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { eq, and } from "drizzle-orm";
-import { integrations, integrationTypeSchema } from "@/server/db/schema/integrations";
+import {
+  integrations,
+  integrationTypeSchema,
+} from "@/server/db/schema/integrations";
 import { createId } from "@paralleldrive/cuid2";
 import { composioService } from "@/lib/services/composio";
 
@@ -25,8 +28,8 @@ export const integrationsRouter = createTRPCRouter({
         .where(
           and(
             eq(integrations.userId, ctx.session.user.id),
-            eq(integrations.type, input.type)
-          )
+            eq(integrations.type, input.type),
+          ),
         )
         .get();
 
@@ -42,8 +45,8 @@ export const integrationsRouter = createTRPCRouter({
         .where(
           and(
             eq(integrations.userId, ctx.session.user.id),
-            eq(integrations.type, "gmail")
-          )
+            eq(integrations.type, "gmail"),
+          ),
         )
         .get();
 
@@ -56,7 +59,7 @@ export const integrationsRouter = createTRPCRouter({
       } else {
         // Create Composio entity
         const entity = await composioService.createEntity(
-          `user_${ctx.session.user.id}_${Date.now()}`
+          `user_${ctx.session.user.id}_${Date.now()}`,
         );
         entityId = entity.id;
 
@@ -81,7 +84,7 @@ export const integrationsRouter = createTRPCRouter({
       // Initiate connection
       const connectionResponse = await composioService.initiateConnection(
         entityId,
-        "gmail"
+        "gmail",
       );
 
       // Update integration with connection details
@@ -111,7 +114,7 @@ export const integrationsRouter = createTRPCRouter({
         connectionId: z.string(),
         status: z.enum(["success", "error"]),
         error: z.string().optional(),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       try {
@@ -122,8 +125,8 @@ export const integrationsRouter = createTRPCRouter({
           .where(
             and(
               eq(integrations.connectionId, input.connectionId),
-              eq(integrations.userId, ctx.session.user.id)
-            )
+              eq(integrations.userId, ctx.session.user.id),
+            ),
           )
           .get();
 
@@ -134,7 +137,7 @@ export const integrationsRouter = createTRPCRouter({
         if (input.status === "success") {
           // Test the connection
           const isActive = await composioService.testGmailConnection(
-            input.connectionId
+            input.connectionId,
           );
 
           await ctx.db
@@ -177,8 +180,8 @@ export const integrationsRouter = createTRPCRouter({
           .where(
             and(
               eq(integrations.id, input.id),
-              eq(integrations.userId, ctx.session.user.id)
-            )
+              eq(integrations.userId, ctx.session.user.id),
+            ),
           )
           .get();
 
@@ -225,8 +228,8 @@ export const integrationsRouter = createTRPCRouter({
           .where(
             and(
               eq(integrations.id, input.id),
-              eq(integrations.userId, ctx.session.user.id)
-            )
+              eq(integrations.userId, ctx.session.user.id),
+            ),
           )
           .get();
 
@@ -236,7 +239,7 @@ export const integrationsRouter = createTRPCRouter({
 
         // Test the connection
         const isActive = await composioService.testGmailConnection(
-          integration.connectionId
+          integration.connectionId,
         );
 
         // Update integration status
@@ -264,7 +267,7 @@ export const integrationsRouter = createTRPCRouter({
         to: z.string().email(),
         subject: z.string(),
         body: z.string(),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       try {
@@ -276,8 +279,8 @@ export const integrationsRouter = createTRPCRouter({
             and(
               eq(integrations.id, input.integrationId),
               eq(integrations.userId, ctx.session.user.id),
-              eq(integrations.status, "connected")
-            )
+              eq(integrations.status, "connected"),
+            ),
           )
           .get();
 
@@ -292,7 +295,7 @@ export const integrationsRouter = createTRPCRouter({
             to: input.to,
             subject: input.subject,
             body: input.body,
-          }
+          },
         );
 
         // Update last sync time

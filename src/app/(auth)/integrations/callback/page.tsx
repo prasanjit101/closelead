@@ -11,30 +11,33 @@ import { toast } from "sonner";
 export default function IntegrationCallbackPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
+  const [status, setStatus] = useState<"loading" | "success" | "error">(
+    "loading",
+  );
   const [message, setMessage] = useState("");
 
-  const handleCallbackMutation = trpc.integrations.handleConnectionCallback.useMutation({
-    onSuccess: (result) => {
-      if (result.success) {
-        setStatus("success");
-        setMessage("Gmail integration connected successfully!");
-        toast.success("Gmail integration connected successfully!");
-        setTimeout(() => {
-          router.push("/integrations");
-        }, 2000);
-      } else {
+  const handleCallbackMutation =
+    trpc.integrations.handleConnectionCallback.useMutation({
+      onSuccess: (result) => {
+        if (result.success) {
+          setStatus("success");
+          setMessage("Gmail integration connected successfully!");
+          toast.success("Gmail integration connected successfully!");
+          setTimeout(() => {
+            router.push("/integrations");
+          }, 2000);
+        } else {
+          setStatus("error");
+          setMessage(result.error || "Connection failed");
+          toast.error("Failed to connect Gmail integration");
+        }
+      },
+      onError: (error) => {
         setStatus("error");
-        setMessage(result.error || "Connection failed");
-        toast.error("Failed to connect Gmail integration");
-      }
-    },
-    onError: (error) => {
-      setStatus("error");
-      setMessage(error.message);
-      toast.error("Failed to process connection callback");
-    },
-  });
+        setMessage(error.message);
+        toast.error("Failed to process connection callback");
+      },
+    });
 
   useEffect(() => {
     const connectionId = searchParams.get("connectionId");
@@ -81,8 +84,8 @@ export default function IntegrationCallbackPage() {
           </CardTitle>
         </CardHeader>
         <CardContent className="text-center">
-          <p className="text-muted-foreground mb-6">{message}</p>
-          
+          <p className="mb-6 text-muted-foreground">{message}</p>
+
           {status !== "loading" && (
             <Button
               onClick={() => router.push("/integrations")}

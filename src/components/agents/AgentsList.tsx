@@ -8,11 +8,11 @@ import { Loader2, Bot, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export function AgentsList() {
-  const { 
-    data: agents, 
-    isLoading, 
-    error, 
-    refetch 
+  const {
+    data: agents,
+    isLoading,
+    error,
+    refetch,
   } = trpc.agent.getUserAgents.useQuery();
 
   const { data: webhooks } = trpc.webhook.getUserWebhooks.useQuery();
@@ -46,18 +46,20 @@ export function AgentsList() {
   // Check if user has webhooks
   if (!webhooks || webhooks.length === 0) {
     return (
-      <div className="text-center py-12">
-        <div className="mx-auto w-24 h-24 bg-muted rounded-full flex items-center justify-center mb-4">
+      <div className="py-12 text-center">
+        <div className="mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-muted">
           <Bot className="h-12 w-12 text-muted-foreground" />
         </div>
-        <h3 className="text-lg font-semibold mb-2">No webhooks found</h3>
-        <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-          You need to create at least one webhook before you can create agents. Agents are triggered by webhook events.
+        <h3 className="mb-2 text-lg font-semibold">No webhooks found</h3>
+        <p className="mx-auto mb-6 max-w-md text-muted-foreground">
+          You need to create at least one webhook before you can create agents.
+          Agents are triggered by webhook events.
         </p>
-        <Alert className="max-w-md mx-auto">
+        <Alert className="mx-auto max-w-md">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
-            Please create a webhook first in the Webhooks section, then return here to create your agents.
+            Please create a webhook first in the Webhooks section, then return
+            here to create your agents.
           </AlertDescription>
         </Alert>
       </div>
@@ -66,13 +68,14 @@ export function AgentsList() {
 
   if (!agents || agents.length === 0) {
     return (
-      <div className="text-center py-12">
-        <div className="mx-auto w-24 h-24 bg-muted rounded-full flex items-center justify-center mb-4">
+      <div className="py-12 text-center">
+        <div className="mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-muted">
           <Bot className="h-12 w-12 text-muted-foreground" />
         </div>
-        <h3 className="text-lg font-semibold mb-2">No agents yet</h3>
-        <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-          Create your first AI agent to automate lead responses and follow-ups. Agents can be triggered by your webhook events.
+        <h3 className="mb-2 text-lg font-semibold">No agents yet</h3>
+        <p className="mx-auto mb-6 max-w-md text-muted-foreground">
+          Create your first AI agent to automate lead responses and follow-ups.
+          Agents can be triggered by your webhook events.
         </p>
         <AddAgentDialog onAgentAdded={handleAgentUpdate} />
       </div>
@@ -105,7 +108,7 @@ export function AgentsList() {
         <Card className="border-dashed">
           <CardContent className="flex items-center justify-center py-8">
             <div className="text-center">
-              <p className="text-sm text-muted-foreground mb-4">
+              <p className="mb-4 text-sm text-muted-foreground">
                 Need another AI agent?
               </p>
               <AddAgentDialog onAgentAdded={handleAgentUpdate} />

@@ -17,7 +17,7 @@ export interface LeadScoringResult {
 
 export async function scoreLeadWithAI(
   leadData: Record<string, any>,
-  scoringPrompt: string
+  scoringPrompt: string,
 ): Promise<LeadScoringResult> {
   try {
     const systemPrompt = `You are a lead scoring AI assistant. Your job is to analyze lead data and provide a score from 1-10 based on the provided criteria.
@@ -60,7 +60,7 @@ Please analyze this lead and provide a score with detailed breakdown.`;
       model: "gpt-4o-mini",
       messages: [
         { role: "system", content: systemPrompt },
-        { role: "user", content: userPrompt }
+        { role: "user", content: userPrompt },
       ],
       temperature: 0.3,
       max_tokens: 1000,
@@ -73,9 +73,13 @@ Please analyze this lead and provide a score with detailed breakdown.`;
 
     // Parse the JSON response
     const result = JSON.parse(response) as LeadScoringResult;
-    
+
     // Validate the response structure
-    if (typeof result.score !== 'number' || result.score < 1 || result.score > 10) {
+    if (
+      typeof result.score !== "number" ||
+      result.score < 1 ||
+      result.score > 10
+    ) {
       throw new Error("Invalid score in AI response");
     }
 
@@ -86,7 +90,7 @@ Please analyze this lead and provide a score with detailed breakdown.`;
     return result;
   } catch (error) {
     console.error("Error scoring lead with AI:", error);
-    
+
     // Fallback scoring if AI fails
     return {
       score: 5,
@@ -94,10 +98,10 @@ Please analyze this lead and provide a score with detailed breakdown.`;
         {
           factor: "AI Scoring Failed",
           points: 0,
-          reasoning: "Unable to process lead with AI, assigned default score"
-        }
+          reasoning: "Unable to process lead with AI, assigned default score",
+        },
       ],
-      summary: "Lead scoring failed, manual review required"
+      summary: "Lead scoring failed, manual review required",
     };
   }
 }

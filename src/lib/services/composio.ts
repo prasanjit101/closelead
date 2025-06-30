@@ -78,7 +78,9 @@ export class ComposioService {
   }
 
   async getEntityConnections(entityId: string): Promise<ComposioConnection[]> {
-    const response = await this.makeRequest(`/entities/${entityId}/connections`);
+    const response = await this.makeRequest(
+      `/entities/${entityId}/connections`,
+    );
     return response.connections || [];
   }
 
