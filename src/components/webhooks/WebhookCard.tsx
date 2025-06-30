@@ -139,7 +139,7 @@ export function WebhookCard({ webhook, onUpdate }: WebhookCardProps) {
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            {!isEditing ? (
+            {isEditing ? (
               <div className="flex-1">
                 <Label htmlFor="webhook-name" className="text-sm font-medium">
                   Webhook Name
@@ -242,7 +242,7 @@ export function WebhookCard({ webhook, onUpdate }: WebhookCardProps) {
       <CardContent className="space-y-4">
         {isEditing && (
           <>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="flex gap-4 w-full">
               <div>
                 <Label htmlFor="form-type" className="text-sm font-medium">
                   Form Type
@@ -256,7 +256,7 @@ export function WebhookCard({ webhook, onUpdate }: WebhookCardProps) {
                     }))
                   }
                 >
-                  <SelectTrigger className="mt-1">
+                  <SelectTrigger className="mt-1 w-[200px]">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -265,8 +265,11 @@ export function WebhookCard({ webhook, onUpdate }: WebhookCardProps) {
                   </SelectContent>
                 </Select>
               </div>
+            </div>
 
-              <div className="flex items-center space-x-2">
+            {
+              isEditing && (
+                <div className="flex items-center space-x-2">
                 <Switch
                   id="is-active"
                   checked={editData.isActive}
@@ -277,8 +280,9 @@ export function WebhookCard({ webhook, onUpdate }: WebhookCardProps) {
                 <Label htmlFor="is-active" className="text-sm font-medium">
                   Active
                 </Label>
-              </div>
-            </div>
+                </div> 
+              )
+            }
 
             <div>
               <Label htmlFor="scoring-prompt" className="text-sm font-medium">
@@ -286,6 +290,7 @@ export function WebhookCard({ webhook, onUpdate }: WebhookCardProps) {
               </Label>
               <Textarea
                 id="scoring-prompt"
+                rows={4}
                 value={editData.scoringPrompt}
                 onChange={(e) =>
                   setEditData((prev) => ({
