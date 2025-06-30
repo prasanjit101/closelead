@@ -15,8 +15,8 @@ export const user = sqliteTable("user", {
   image: text("image"),
   onboard: integer("onboard", { mode: "boolean" }).default(false),
   metadata: text("metadata"),
-  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
-  updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" }),
+  updatedAt: integer("updated_at", { mode: "timestamp" }),
   role: text("role").notNull().default("user"),
   banned: integer("banned", { mode: "boolean" }).notNull().default(false),
   banReason: text("ban_reason"),
@@ -30,7 +30,11 @@ export const userRelations = relations(user, ({ many }) => ({
 
 export type User = typeof user.$inferSelect;
 export const selectUserSchema = createSelectSchema(user);
-export const insertUserSchema = createInsertSchema(user);
+export const insertUserSchema = createInsertSchema(user).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
 export const updateUserSchema = createUpdateSchema(user);
 export type UserInsert = z.infer<typeof insertUserSchema>;
 export type UserUpdate = z.infer<typeof updateUserSchema>;

@@ -35,12 +35,8 @@ export const agent = sqliteTable("agent", {
   links: text("links", { mode: "json" }).$type<AgentLink[]>(), // JSON field for agent links
   metadata: text("metadata"), // JSON field for agent metadata
   isActive: integer("is_active", { mode: "boolean" }).default(true),
-  createdAt: integer("created_at", { mode: "timestamp" })
-    .notNull()
-    .default(sql`(unixepoch())`),
-  updatedAt: integer("updated_at", { mode: "timestamp" })
-    .notNull()
-    .default(sql`(unixepoch())`),
+  createdAt: integer("created_at", { mode: "timestamp" }),
+  updatedAt: integer("updated_at", { mode: "timestamp" }),
 });
 
 // Junction table for many-to-many relationship between agents and webhooks
@@ -87,7 +83,12 @@ export type AgentWithWebhooks = Agent & {
 };
 
 export const selectAgentSchema = createSelectSchema(agent);
-export const insertAgentSchema = createInsertSchema(agent);
+export const insertAgentSchema = createInsertSchema(agent).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  userId: true,
+});
 export const updateAgentSchema = createUpdateSchema(agent);
 export type AgentInsert = z.infer<typeof insertAgentSchema>;
 export type AgentUpdate = z.infer<typeof updateAgentSchema>;

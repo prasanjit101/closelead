@@ -30,7 +30,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { trpc } from "@/trpc/react";
-import type { Webhook } from "@/server/db/schema";
+import type { Webhook, WebhookUpdate } from "@/server/db/schema";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -49,18 +49,8 @@ interface WebhookCardProps {
 }
 
 const formTypeLabels = {
-  typeform: "Typeform",
-  google_forms: "Google Forms",
   custom: "Custom",
   tally: "Tally",
-};
-
-const formTypeColors = {
-  typeform:
-    "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
-  google_forms: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
-  custom: "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200",
-  tally: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
 };
 
 export function WebhookCard({ webhook, onUpdate }: WebhookCardProps) {
@@ -68,11 +58,7 @@ export function WebhookCard({ webhook, onUpdate }: WebhookCardProps) {
   const [showSecret, setShowSecret] = useState(false);
   const [editData, setEditData] = useState({
     name: webhook.name,
-    formType: webhook.formType as
-      | "typeform"
-      | "google_forms"
-      | "custom"
-      | "tally",
+    formType: webhook.formType as Webhook['formType'],
     webhookSecret: webhook.webhookSecret || "",
     scoringPrompt: webhook.scoringPrompt || "", // Add scoringPrompt
     isActive: webhook.isActive || false,
@@ -140,11 +126,7 @@ export function WebhookCard({ webhook, onUpdate }: WebhookCardProps) {
   const handleCancel = () => {
     setEditData({
       name: webhook.name,
-      formType: webhook.formType as
-        | "typeform"
-        | "google_forms"
-        | "custom"
-        | "tally",
+      formType: webhook.formType as Webhook['formType'],
       webhookSecret: webhook.webhookSecret || "",
       scoringPrompt: webhook.scoringPrompt || "", // Reset scoringPrompt
       isActive: webhook.isActive || false,
@@ -157,7 +139,7 @@ export function WebhookCard({ webhook, onUpdate }: WebhookCardProps) {
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            {isEditing ? (
+            {!isEditing ? (
               <div className="flex-1">
                 <Label htmlFor="webhook-name" className="text-sm font-medium">
                   Webhook Name
@@ -177,12 +159,8 @@ export function WebhookCard({ webhook, onUpdate }: WebhookCardProps) {
                 <CardTitle className="text-lg">{webhook.name}</CardTitle>
                 <div className="mt-1 flex items-center gap-2">
                   <Badge
-                    variant="secondary"
-                    className={
-                      formTypeColors[
-                        webhook.formType as keyof typeof formTypeColors
-                      ]
-                    }
+                      className="rounded-full text-xs"
+                      variant="secondary"
                   >
                     {
                       formTypeLabels[
@@ -190,7 +168,7 @@ export function WebhookCard({ webhook, onUpdate }: WebhookCardProps) {
                       ]
                     }
                   </Badge>
-                  <Badge variant={webhook.isActive ? "default" : "secondary"}>
+                    <Badge className="rounded-full text-xs" variant={webhook.isActive ? "default" : "outline"}>
                     {webhook.isActive ? "Active" : "Inactive"}
                   </Badge>
                 </div>
@@ -198,7 +176,7 @@ export function WebhookCard({ webhook, onUpdate }: WebhookCardProps) {
             )}
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex gap-2">
             {isEditing ? (
               <>
                 <Button
@@ -223,19 +201,17 @@ export function WebhookCard({ webhook, onUpdate }: WebhookCardProps) {
             ) : (
               <>
                 <Button
-                  size="sm"
+                    size="icon"
                   variant="outline"
                   onClick={() => setIsEditing(true)}
                   className="h-8"
                 >
-                  <Edit className="mr-1 h-4 w-4" />
-                  Edit
+                    <Edit className="mr-1 h-4 w-4" />
                 </Button>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button size="sm" variant="destructive" className="h-8">
-                      <Trash2 className="mr-1 h-4 w-4" />
-                      Delete
+                      <Button size="icon" variant="destructive" className="h-8">
+                        <Trash2 className="mr-1 h-4 w-4" />
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
@@ -276,11 +252,7 @@ export function WebhookCard({ webhook, onUpdate }: WebhookCardProps) {
                   onValueChange={(value) =>
                     setEditData((prev) => ({
                       ...prev,
-                      formType: value as
-                        | "typeform"
-                        | "google_forms"
-                        | "custom"
-                        | "tally",
+                      formType: value as Webhook['formType'],
                     }))
                   }
                 >
@@ -288,8 +260,6 @@ export function WebhookCard({ webhook, onUpdate }: WebhookCardProps) {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="typeform">Typeform</SelectItem>
-                    <SelectItem value="google_forms">Google Forms</SelectItem>
                     <SelectItem value="tally">Tally</SelectItem>
                     <SelectItem value="custom">Custom</SelectItem>
                   </SelectContent>
@@ -338,14 +308,6 @@ export function WebhookCard({ webhook, onUpdate }: WebhookCardProps) {
               <Globe className="h-4 w-4" />
               Webhook URL
             </Label>
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={() => copyToClipboard(webhook.webhookUrl, "Webhook URL")}
-              className="h-6 px-2"
-            >
-              <Copy className="h-3 w-3" />
-            </Button>
           </div>
           <div className="flex items-center gap-2">
             <Input
@@ -355,11 +317,11 @@ export function WebhookCard({ webhook, onUpdate }: WebhookCardProps) {
             />
             <Button
               size="sm"
-              variant="outline"
-              onClick={() => window.open(webhook.webhookUrl, "_blank")}
-              className="h-9 px-3"
+              variant="ghost"
+              onClick={() => copyToClipboard(webhook.webhookUrl, "Webhook URL")}
+              className="h-6 px-2"
             >
-              <ExternalLink className="h-4 w-4" />
+              <Copy className="h-3 w-3" />
             </Button>
           </div>
         </div>
@@ -428,16 +390,6 @@ export function WebhookCard({ webhook, onUpdate }: WebhookCardProps) {
               className="bg-muted font-mono text-sm"
             />
           )}
-        </div>
-
-        {/* Metadata */}
-        <div className="border-t pt-2 text-xs text-muted-foreground">
-          <div className="flex justify-between">
-            <span>
-              Created: {new Date(webhook.createdAt).toLocaleDateString()}
-            </span>
-            <span>ID: {webhook.id}</span>
-          </div>
         </div>
       </CardContent>
     </Card>

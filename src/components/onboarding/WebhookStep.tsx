@@ -31,16 +31,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { insertWebhookSchema } from "@/server/db/schema/webhook";
 
-const webhookFormSchema = z.object({
-  name: z.string().min(1, "Webhook name is required"),
-  formType: z.enum(["typeform", "google_forms", "custom", "tally"], {
-    required_error: "Please select a form type",
-  }),
-  webhookSecret: z.string().optional(),
-});
-
-type WebhookFormData = z.infer<typeof webhookFormSchema>;
+type WebhookFormData = z.infer<typeof insertWebhookSchema>;
 
 interface WebhookStepProps {
   onBack: () => void;
@@ -56,7 +49,7 @@ function generateWebhookSecret(): string {
 
 export function WebhookStep({ onBack, onSuccess }: WebhookStepProps) {
   const form = useForm<WebhookFormData>({
-    resolver: zodResolver(webhookFormSchema),
+    resolver: zodResolver(insertWebhookSchema),
     defaultValues: {
       name: "",
       webhookSecret: generateWebhookSecret(),
@@ -132,12 +125,8 @@ export function WebhookStep({ onBack, onSuccess }: WebhookStepProps) {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="typeform">Typeform</SelectItem>
-                        <SelectItem value="google_forms">
-                          Google Forms
-                        </SelectItem>
-                        <SelectItem value="tally">Tally</SelectItem>
                         <SelectItem value="custom">Custom Form</SelectItem>
+                        <SelectItem value="tally">Tally</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormDescription>
@@ -160,6 +149,7 @@ export function WebhookStep({ onBack, onSuccess }: WebhookStepProps) {
                         <Input
                           placeholder="Webhook secret for verification"
                           {...field}
+                          value={field.value ?? ""}
                           className="font-mono text-sm"
                         />
                       </FormControl>

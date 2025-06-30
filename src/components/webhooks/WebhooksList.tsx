@@ -13,7 +13,10 @@ export function WebhooksList() {
     isLoading,
     error,
     refetch,
-  } = trpc.webhook.getUserWebhooks.useQuery();
+  } = trpc.webhook.getUserWebhooks.useQuery(undefined, {
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+  });
 
   const handleWebhookUpdate = () => {
     refetch();
@@ -61,8 +64,8 @@ export function WebhooksList() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">Webhooks</h2>
-          <p className="text-muted-foreground">
+          <h2 className="text-lg font-semibold">Webhooks</h2>
+          <p className="text-muted-foreground text-sm">
             Manage your webhook endpoints for receiving form submissions.
           </p>
         </div>
@@ -76,21 +79,8 @@ export function WebhooksList() {
             webhook={webhook}
             onUpdate={handleWebhookUpdate}
           />
-        ))}
+        ))} 
       </div>
-
-      {webhooks.length > 0 && (
-        <Card className="border-dashed">
-          <CardContent className="flex items-center justify-center py-8">
-            <div className="text-center">
-              <p className="mb-4 text-sm text-muted-foreground">
-                Need another webhook endpoint?
-              </p>
-              <AddWebhookDialog onWebhookAdded={handleWebhookUpdate} />
-            </div>
-          </CardContent>
-        </Card>
-      )}
     </div>
   );
 }

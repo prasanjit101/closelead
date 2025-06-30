@@ -35,17 +35,9 @@ import { Textarea } from "@/components/ui/textarea"; // Import Textarea
 import { Plus, Loader2, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { trpc } from "@/trpc/react";
+import { insertWebhookSchema } from "@/server/db/schema/webhook";
 
-const webhookFormSchema = z.object({
-  name: z.string().min(1, "Webhook name is required"),
-  formType: z.enum(["typeform", "google_forms", "custom", "tally"], {
-    required_error: "Please select a form type",
-  }),
-  webhookSecret: z.string().optional(),
-  scoringPrompt: z.string().min(1, "Scoring prompt is required"), // Add scoringPrompt field
-});
-
-type WebhookFormData = z.infer<typeof webhookFormSchema>;
+type WebhookFormData = z.infer<typeof insertWebhookSchema>;
 
 interface AddWebhookDialogProps {
   onWebhookAdded: () => void;
@@ -62,12 +54,12 @@ export function AddWebhookDialog({ onWebhookAdded }: AddWebhookDialogProps) {
   const [open, setOpen] = useState(false);
 
   const form = useForm<WebhookFormData>({
-    resolver: zodResolver(webhookFormSchema),
+    resolver: zodResolver(insertWebhookSchema),
     defaultValues: {
       name: "",
-      formType: undefined,
+      formType: "custom", // Set a default value for formType
       webhookSecret: generateWebhookSecret(),
-      scoringPrompt: "", // Set default value for scoringPrompt
+      scoringPrompt: "",
     },
   });
 
@@ -89,6 +81,7 @@ export function AddWebhookDialog({ onWebhookAdded }: AddWebhookDialogProps) {
   });
 
   const onSubmit = (data: WebhookFormData) => {
+    console.log("Submitting webhook data:", data); // Add log for debugging
     createWebhookMutation.mutate(data);
   };
 
@@ -153,8 +146,6 @@ export function AddWebhookDialog({ onWebhookAdded }: AddWebhookDialogProps) {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="typeform">Typeform</SelectItem>
-                      <SelectItem value="google_forms">Google Forms</SelectItem>
                       <SelectItem value="tally">Tally</SelectItem>
                       <SelectItem value="custom">Custom Form</SelectItem>
                     </SelectContent>
@@ -178,6 +169,7 @@ export function AddWebhookDialog({ onWebhookAdded }: AddWebhookDialogProps) {
                       <Input
                         placeholder="Webhook secret for verification"
                         {...field}
+                        value={field.value ?? ""}
                         className="font-mono text-sm"
                       />
                     </FormControl>
@@ -210,6 +202,8 @@ export function AddWebhookDialog({ onWebhookAdded }: AddWebhookDialogProps) {
                     <Textarea
                       placeholder="e.g., Score this lead based on their interest in our product."
                       {...field}
+                      rows={5}
+                      value={field.value ?? ""}
                     />
                   </FormControl>
                   <FormDescription>
@@ -229,7 +223,11 @@ export function AddWebhookDialog({ onWebhookAdded }: AddWebhookDialogProps) {
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={createWebhookMutation.isPending}>
+              <Button
+                className="gap-2"
+                type="submit"
+                disabled={createWebhookMutation.isPending}
+              >
                 {createWebhookMutation.isPending ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />

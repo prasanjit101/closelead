@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { eq } from "drizzle-orm";
-import { webhooks } from "@/server/db/schema/webhook";
+import { insertWebhookSchema, updateWebhookSchema, webhooks } from "@/server/db/schema/webhook";
 import { user } from "@/server/db/schema/user";
 import { createId } from "@paralleldrive/cuid2";
 import { env } from "@/env";
@@ -20,14 +20,7 @@ function generateWebhookUrl(webhookId: string): string {
 
 export const webhookRouter = createTRPCRouter({
   create: protectedProcedure
-    .input(
-      z.object({
-        name: z.string().min(1, "Webhook name is required"),
-        formType: z.enum(["typeform", "google_forms", "custom", "tally"]),
-        webhookSecret: z.string().optional(),
-        scoringPrompt: z.string().min(1, "Scoring prompt is required"),
-      }),
-    )
+    .input(insertWebhookSchema)
     .mutation(async ({ ctx, input }) => {
       const webhookId = createId();
       const webhookSecret = input.webhookSecret || generateWebhookSecret();
@@ -44,7 +37,6 @@ export const webhookRouter = createTRPCRouter({
           formType: input.formType,
           scoringPrompt: input.scoringPrompt,
           isActive: true,
-          createdAt: new Date(),
         })
         .returning()
         .get();
@@ -69,18 +61,7 @@ export const webhookRouter = createTRPCRouter({
   }),
 
   update: protectedProcedure
-    .input(
-      z.object({
-        id: z.string(),
-        name: z.string().min(1).optional(),
-        formType: z
-          .enum(["typeform", "google_forms", "custom", "tally"])
-          .optional(),
-        webhookSecret: z.string().optional(),
-        scoringPrompt: z.string().min(1).optional(),
-        isActive: z.boolean().optional(),
-      }),
-    )
+    .input(updateWebhookSchema)
     .mutation(async ({ ctx, input }) => {
       const { id, ...updateData } = input;
 
@@ -88,7 +69,7 @@ export const webhookRouter = createTRPCRouter({
       const existingWebhook = await ctx.db
         .select()
         .from(webhooks)
-        .where(eq(webhooks.id, id))
+        .where(eq(webhooks.id, input.id!))
         .get();
 
       if (!existingWebhook || existingWebhook.userId !== ctx.session.user.id) {
@@ -98,7 +79,7 @@ export const webhookRouter = createTRPCRouter({
       const updatedWebhook = await ctx.db
         .update(webhooks)
         .set(updateData)
-        .where(eq(webhooks.id, id))
+        .where(eq(webhooks.id, input.id!))
         .returning()
         .get();
 
@@ -127,26 +108,7 @@ export const webhookRouter = createTRPCRouter({
   regenerateSecret: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      // Verify webhook belongs to user
-      const existingWebhook = await ctx.db
-        .select()
-        .from(webhooks)
-        .where(eq(webhooks.id, input.id))
-        .get();
-
-      if (!existingWebhook || existingWebhook.userId !== ctx.session.user.id) {
-        throw new Error("Webhook not found or unauthorized");
-      }
-
       const newSecret = generateWebhookSecret();
-
-      const updatedWebhook = await ctx.db
-        .update(webhooks)
-        .set({ webhookSecret: newSecret })
-        .where(eq(webhooks.id, input.id))
-        .returning()
-        .get();
-
-      return updatedWebhook;
+      return { webhookSecret: newSecret };
     }),
 });

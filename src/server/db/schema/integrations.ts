@@ -42,12 +42,8 @@ export const integrations = sqliteTable("integrations", {
   lastSyncAt: integer("last_sync_at", { mode: "timestamp" }),
   errorMessage: text("error_message"),
   isActive: integer("is_active", { mode: "boolean" }).default(true),
-  createdAt: integer("created_at", { mode: "timestamp" })
-    .notNull()
-    .default(sql`(unixepoch())`),
+  createdAt: integer("created_at", { mode: "timestamp" }),
   updatedAt: integer("updated_at", { mode: "timestamp" })
-    .notNull()
-    .default(sql`(unixepoch())`),
 });
 
 // Relations
@@ -60,7 +56,12 @@ export const integrationsRelations = relations(integrations, ({ one }) => ({
 
 export type Integration = typeof integrations.$inferSelect;
 export const selectIntegrationSchema = createSelectSchema(integrations);
-export const insertIntegrationSchema = createInsertSchema(integrations);
+export const insertIntegrationSchema = createInsertSchema(integrations).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  userId: true,
+});
 export const updateIntegrationSchema = createUpdateSchema(integrations);
 export type IntegrationInsert = z.infer<typeof insertIntegrationSchema>;
 export type IntegrationUpdate = z.infer<typeof updateIntegrationSchema>;
