@@ -3,10 +3,8 @@ import { validateSession } from "auth";
 import { redirect } from "next/navigation";
 
 export default async function AgentsPage() {
-  const session = await validateSession();
-
   return (
-    <div className="container mx-auto max-w-6xl px-4 py-8">
+    <div className="container mx-auto max-w-3xl px-4 py-12">
       <AgentsList />
     </div>
   );

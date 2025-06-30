@@ -13,9 +13,15 @@ export function AgentsList() {
     isLoading,
     error,
     refetch,
-  } = trpc.agent.getUserAgents.useQuery();
+  } = trpc.agent.getUserAgents.useQuery(undefined, {
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+  });
 
-  const { data: webhooks } = trpc.webhook.getUserWebhooks.useQuery();
+  const { data: webhooks } = trpc.webhook.getUserWebhooks.useQuery(undefined, {
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+  });
 
   const handleAgentUpdate = () => {
     refetch();
@@ -86,15 +92,15 @@ export function AgentsList() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">AI Agents</h2>
-          <p className="text-muted-foreground">
+          <h2 className="text-lg font-semibold">AI Agents</h2>
+          <p className="text-muted-foreground text-sm">
             Manage your AI agents for automated lead responses and follow-ups.
           </p>
         </div>
         <AddAgentDialog onAgentAdded={handleAgentUpdate} />
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+      <div className="flex flex-col gap-4">
         {agents.map((agent) => (
           <AgentCard
             key={agent.id}
@@ -103,19 +109,6 @@ export function AgentsList() {
           />
         ))}
       </div>
-
-      {agents.length > 0 && (
-        <Card className="border-dashed">
-          <CardContent className="flex items-center justify-center py-8">
-            <div className="text-center">
-              <p className="mb-4 text-sm text-muted-foreground">
-                Need another AI agent?
-              </p>
-              <AddAgentDialog onAgentAdded={handleAgentUpdate} />
-            </div>
-          </CardContent>
-        </Card>
-      )}
     </div>
   );
 }

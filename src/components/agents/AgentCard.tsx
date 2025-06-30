@@ -30,7 +30,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { trpc } from "@/trpc/react";
-import type { AgentWithWebhooks } from "@/server/db/schema/agent";
+import type { AgentType, AgentWithWebhooks } from "@/server/db/schema/agent";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -71,7 +71,7 @@ export function AgentCard({ agent, onUpdate }: AgentCardProps) {
     name: agent.name,
     description: agent.description || "",
     systemPrompt: agent.systemPrompt,
-    type: agent.type as "response_agent" | "followup_agent",
+    type: agent.type as AgentType,
     webhookIds: agent.webhooks.map((w) => w.id),
     isActive: agent.isActive || false,
     links: agent.links || [], // Initialize links
@@ -122,7 +122,7 @@ export function AgentCard({ agent, onUpdate }: AgentCardProps) {
       name: agent.name,
       description: agent.description || "",
       systemPrompt: agent.systemPrompt,
-      type: agent.type as "response_agent" | "followup_agent",
+      type: agent.type as AgentType,
       webhookIds: agent.webhooks.map((w) => w.id),
       isActive: agent.isActive || false,
       links: agent.links || [], // Reset links on cancel
@@ -137,9 +137,11 @@ export function AgentCard({ agent, onUpdate }: AgentCardProps) {
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="bg-primary/10 rounded-lg p-2">
-              <Bot className="h-5 w-5 text-primary" />
-            </div>
+            {!isEditing && (
+              <div className="bg-primary/10 rounded-lg p-2">
+                <Bot className="h-5 w-5 text-primary" />
+              </div>
+            )}
             {isEditing ? (
               <div className="flex-1">
                 <Label htmlFor="agent-name" className="text-sm font-medium">
@@ -285,7 +287,7 @@ export function AgentCard({ agent, onUpdate }: AgentCardProps) {
                   onValueChange={(value) =>
                     setEditData((prev) => ({
                       ...prev,
-                      type: value as "response_agent" | "followup_agent",
+                      type: value as AgentType,
                     }))
                   }
                 >
@@ -512,42 +514,9 @@ export function AgentCard({ agent, onUpdate }: AgentCardProps) {
           </div>
         )}
 
-        {/* Links */}
-        {!isEditing && (
-          <div>
-            <Label className="text-sm font-medium">Links</Label>
-            <div className="mt-2 space-y-2">
-              {agent.links && agent.links.length > 0 ? (
-                agent.links.map((link, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <a
-                      href={link.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm text-blue-600 hover:underline"
-                    >
-                      {link.name}
-                    </a>
-                    {link.description && (
-                      <span className="text-xs text-muted-foreground">
-                        ({link.description})
-                      </span>
-                    )}
-                  </div>
-                ))
-              ) : (
-                <span className="text-sm text-muted-foreground">
-                  No links provided
-                </span>
-              )}
-            </div>
-          </div>
-        )}
-
         {/* System Prompt */}
-        <div>
+        {isEditing && <div>
           <Label className="text-sm font-medium">System Prompt</Label>
-          {isEditing ? (
             <Textarea
               value={editData.systemPrompt}
               onChange={(e) =>
@@ -560,24 +529,7 @@ export function AgentCard({ agent, onUpdate }: AgentCardProps) {
               placeholder="Enter system prompt"
               rows={4}
             />
-          ) : (
-            <div className="mt-1 rounded-md bg-muted p-3">
-              <p className="whitespace-pre-wrap font-mono text-sm">
-                {agent.systemPrompt}
-              </p>
-            </div>
-          )}
-        </div>
-
-        {/* Metadata */}
-        <div className="border-t pt-2 text-xs text-muted-foreground">
-          <div className="flex justify-between">
-            <span>
-              Created: {new Date(agent.createdAt).toLocaleDateString()}
-            </span>
-            <span>ID: {agent.id}</span>
-          </div>
-        </div>
+        </div>}
       </CardContent>
     </Card>
   );

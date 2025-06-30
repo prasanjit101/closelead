@@ -14,7 +14,7 @@ import {
 } from "drizzle-zod";
 import { z } from "zod";
 
-export const agentType = ["response_agent", "followup_agent"] as const;
+export const agentType = ["response_agent"] as const;
 export type AgentType = (typeof agentType)[number];
 export const agentTypeSchema = z.enum(agentType);
 
